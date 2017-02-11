@@ -40,6 +40,8 @@ int main(int argc, char *argv[]) {
 	int       list_s;                /*  listening socket          */
 	short int port;                  /*  port number: UDP               */
 	struct    sockaddr_in servaddr;  /*  socket address structure  */
+	struct sockaddr_in remaddr;  /* remote address */
+	socklen_t addren = sizeof(remaddr); /* length of remote address */
 	char      buffer[MAX_LINE];      /*  character buffer          */
 	char      buffer_send[MAX_LINE];
 	char     *endptr;                /*  for strtol()              */
@@ -121,6 +123,16 @@ int main(int argc, char *argv[]) {
 	/*  Enter an infinite loop to respond to client requests.  */
 
 	while ( 1 ) {
+		/*UDP connection*/
+		printf("Waiting on port %d\n", port);
+		int recvlen = 0;
+		recvlen = recvfrom(socket_udp, buffer, MAX_LINE, 0, (struct sockaddr *) &remaddr, $addrlen);
+		printf("recieved %d bytes\n", recvlen);
+		if (recvlen > 0) {
+			buffer[recvlen] = 0;
+			printf("received message: \"%s\"\n", buffer);
+		}
+		
 		/*  Wait for a connection, then accept() it  */
 
 		if ( (socket_tcp = accept(list_s, NULL, NULL) ) < 0 ) {

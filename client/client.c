@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
     	exit(EXIT_FAILURE);
     }
 
-    /* UDP connectin */
+    /* UDP connection */
 
     /*  Set the remote port  */
     memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for udp_port */
@@ -110,11 +110,10 @@ int main(int argc, char *argv[]) {
     	exit(EXIT_FAILURE);
     }
 	
-
-    /*  Create the listening socket  */
+    /*Create UDP socket*/
 
     if ( (socket_udp = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-    	fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
+    	fprintf(stderr, "ECHOCLNT: Error creating UDP socket.\n");
     	exit(EXIT_FAILURE);
     }
 
@@ -140,7 +139,12 @@ int main(int argc, char *argv[]) {
             strcat(buffer_send, buffer);
             strcat(buffer_send, "\n");
 
-            write(socket_tcp, buffer_send, strlen(buffer_send));
+	    /*Send message to server via UDP*/
+	    if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *), sizeof(servaddr)) < 0) {
+		    perror("Send to, failed.");
+		    exit(EXIT_FAILURE);
+	    }
+	    
             read(socket_tcp, buffer_received, MAX_LINE-1);
 
             /* reset buffer to get only relevant string */
