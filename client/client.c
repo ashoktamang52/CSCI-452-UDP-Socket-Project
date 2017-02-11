@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
             strcat(buffer_send, "\n");
 
 	    /*Send message to server via UDP*/
-	    if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *), sizeof(servaddr)) < 0) {
+	    if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
 		    perror("Send to, failed.");
 		    exit(EXIT_FAILURE);
 	    }
