@@ -142,8 +142,8 @@ int main(int argc, char *argv[]) {
 
 
 		if (strncmp(buffer, "CAP", 3) == 0) {
-		/*number of relevant bytes of message */
-		/*= buffer length - 'CAP' length - length of two line breaks - end of string */
+			/*number of relevant bytes of message */
+			/*= buffer length - 'CAP' length - length of two line breaks - end of string */
 
 			to_capitalize =  (char* ) malloc(sizeof(char*) * (strlen(buffer) - 6));
 			memcpy(to_capitalize, buffer + 4, strlen(buffer) - 6);
@@ -162,13 +162,19 @@ int main(int argc, char *argv[]) {
 
 			/*[> parse the capitalized message to send to the client <]*/
 
-			sprintf(buffer_send, "%s", to_capitalize);
+			sprintf(buffer_send, "%d", strlen(to_capitalize));
 			strcat(buffer_send, "\n");
 			strcat(buffer_send, to_capitalize);
 
+			printf("to send: %s\n", to_capitalize);
 			/*[> send the formatted message to the client <]*/
-			/*write(socket_tcp, buffer_send, strlen(buffer_send));*/
 
+			int sentlen = 0;
+			sentlen = sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen);
+			if (sentlen < 0) {
+				buffer_send[sentlen] = 0;
+				perror("Sending failed.");
+			}
 			/*[> free the memory <]*/
 			free(to_capitalize);
 
