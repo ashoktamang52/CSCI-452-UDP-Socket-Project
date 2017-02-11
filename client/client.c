@@ -32,21 +32,24 @@
 
 /*  Function declarations  */
 
-int ParseCmdLine(int argc, char *argv[], char **szAddress, char **szPort);
+int ParseCmdLine(int argc, char *argv[], char **szAddress, char **tcpPort, char **udpPort);
 
 
 /*  main()  */
 
 int main(int argc, char *argv[]) {
 
-    int       conn_s;                     /*  connection socket                  */
-    short int port;                       /*  port number                        */
+    int       socket_tcp;                    /*  connection socket                  */
+    int	      socket_udp;
+    short int tcp_port;                   /*  tcp port number                        */
+    short int udp_port;                   /*  udp port number                    */
     struct    sockaddr_in servaddr;       /*  socket address structure           */
     char      buffer[MAX_LINE];           /*  character buffer                   */
     char      buffer_send[MAX_LINE];      /*  Holds message to be send to server */
     char      buffer_received[MAX_LINE];  /*  Holds message send by server       */
     char     *szAddress;                  /*  Holds remote IP address            */
-    char     *szPort;                     /*  Holds remote port                  */
+    char     *udpPort;			 /* Holds server upd port */
+    char     *tcpPort;                     /*  Holds server tcp port                  */
     char     *endptr;                     /*  for strtol()                       */
     FILE     *fp;                         /*  file pointer                       */
     char     *file_name;                  /*  for creating and writing data into */
@@ -54,12 +57,12 @@ int main(int argc, char *argv[]) {
 
     /*  Get command line arguments  */
 
-    ParseCmdLine(argc, argv, &szAddress, &szPort);
+    ParseCmdLine(argc, argv, &szAddress, &tcpPort, &udpPort);
 
 
     /*  Set the remote port  */
 
-    port = strtol(szPort, &endptr, 0);
+    tcp_port = strtol(tcpPort, &endptr, 0);
     if ( *endptr ) {
     	printf("ECHOCLNT: Invalid port supplied.\n");
     	exit(EXIT_FAILURE);
@@ -68,7 +71,7 @@ int main(int argc, char *argv[]) {
 
     /*  Create the listening socket  */
 
-    if ( (conn_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+    if ( (socket_tcp = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
     	fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
     	exit(EXIT_FAILURE);
     }
@@ -78,7 +81,7 @@ int main(int argc, char *argv[]) {
 
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family      = AF_INET;
-    servaddr.sin_port        = htons(port);
+    servaddr.sin_port        = htons(tcp_port);
 
 
     /*  Set the remote IP address  */
@@ -91,7 +94,7 @@ int main(int argc, char *argv[]) {
     
     /*  connect() to the remote echo server  */
 
-    if ( connect(conn_s, (struct sockaddr *) &servaddr, sizeof(servaddr) ) < 0 ) {
+    if ( connect(socket_tcp, (struct sockaddr *) &servaddr, sizeof(servaddr) ) < 0 ) {
     	printf("ECHOCLNT: Error calling connect()\n");
     	exit(EXIT_FAILURE);
     }
@@ -111,8 +114,8 @@ int main(int argc, char *argv[]) {
             strcat(buffer_send, buffer);
             strcat(buffer_send, "\n");
 
-            write(conn_s, buffer_send, strlen(buffer_send));
-            read(conn_s, buffer_received, MAX_LINE-1);
+            write(socket_tcp, buffer_send, strlen(buffer_send));
+            read(socket_tcp, buffer_received, MAX_LINE-1);
 
             /* reset buffer to get only relevant string */
             memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
@@ -132,10 +135,10 @@ int main(int argc, char *argv[]) {
             strcat(buffer_send, buffer);
 
             /* Send message to server. */
-            write(conn_s, buffer_send, strlen(buffer_send));
+            write(socket_tcp, buffer_send, strlen(buffer_send));
 
             /* Read message from server. */
-            read(conn_s, buffer_received, MAX_LINE-1);
+            read(socket_tcp, buffer_received, MAX_LINE-1);
  
             /* write the data to the file. */
             if (strncmp(buffer_received + 2, "NOT FOUND", 9) == 0) {
@@ -152,7 +155,7 @@ int main(int argc, char *argv[]) {
         }
         else if (strncmp(buffer, "q", 1) == 0) {
             fprintf(stderr, "Now should exit.\n");
-            if (close(conn_s) < 0 ) {
+            if (close(socket_tcp) < 0 ) {
                 fprintf(stderr, "ECHOSERV: Error calling close()\n");
                 exit(EXIT_FAILURE);
             }
@@ -173,15 +176,16 @@ int main(int argc, char *argv[]) {
 }
 
 
-int ParseCmdLine(int argc, char *argv[], char **szAddress, char **szPort) {
-    /* Number of arguments: <clent> <ip> <port> (3 arguments). */
-    if (argc == 3) {
-        *szAddress = argv[1];
-	    *szPort = argv[2];
+int ParseCmdLine(int argc, char *argv[], char **szAddress, char **tcpPort, char **udpPort) {
+    /* Number of arguments: <client> <TCP port> <server IP> <server UDP Port> (4 arguments). */
+    if (argc == 4) {
+	*tcpPort = argv[1];
+        *szAddress = argv[2];
+	*udpPort = argv[3];
     }
 	else {
 	    printf("Usage:\n\n");
-	    printf("    <client> <IP address> <remote Port>\n\n");
+	    printf("    <client> <TCP port> <server IP> <server UDP Port>\n\n");
 	    exit(EXIT_SUCCESS);
 	}
     return 0;
