@@ -78,8 +78,8 @@ int main(int argc, char *argv[]) {
 	/*exit(EXIT_FAILURE);*/
 	/*}*/
 
-	/*/*  Set all bytes in socket address structure to*/
-	/*zero, and fill in the relevant data members   */*/
+	/*  Set all bytes in socket address structure to*/
+	/*zero, and fill in the relevant data members   */
 
 		/*memset(&servaddr, 0, sizeof(servaddr));*/
 		/*servaddr.sin_family      = AF_INET;*/
@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
 
 			/*memcpy(buffer, buffer_received + 2, strlen(buffer_received) - 2);*/
 			/*printf("Server responded: %s", buffer);*/
-			/*        }*/
+		}
 		else if (strncmp(buffer, "t", 1) == 0) {
 			printf("\nPlease Enter a string: ");
 			fgets(buffer, MAX_LINE, stdin);
@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
 			/*fclose(fp);*/
 			/*free(file_name);*/
 			/*}*/
-			/*      }*/
+		}
 		else if (strncmp(buffer, "q", 1) == 0) {
 			fprintf(stderr, "Now should exit.\n");
 			if (close(socket_tcp) < 0 ) {

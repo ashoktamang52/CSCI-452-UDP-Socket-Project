@@ -76,8 +76,8 @@ int main(int argc, char *argv[]) {
 	/*}*/
 
 
-	/*/*  Set all bytes in socket address structure to*/
-	/*zero, and fill in the relevant data members   */*/
+	/*  Set all bytes in socket address structure to*/
+	/*zero, and fill in the relevant data members   */
 
 		/*memset(&servaddr, 0, sizeof(servaddr));*/
 		/*servaddr.sin_family      = AF_INET;*/
@@ -85,8 +85,8 @@ int main(int argc, char *argv[]) {
 		/*servaddr.sin_port        = htons(port);*/
 
 
-		/*/*  Bind our socket addresss to the */
-		/*listening socket, and call listen()  */*/
+		/*  Bind our socket addresss to the */
+		/*listening socket, and call listen()  */
 
 		/*if ( bind(list_s, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0 ) {*/
 		/*fprintf(stderr, "ECHOSERV: Error calling bind()\n");*/
@@ -140,18 +140,17 @@ int main(int argc, char *argv[]) {
 		/*exit(EXIT_FAILURE);*/
 		/*}*/
 
-		/*/*  */
 		/*Retrieve an input line from the connected socket*/
 		/*then simply write it back to the  same socket.     */
-		/**/*/
+		/**/
 
 			/*while (1) {*/
 			/*read(socket_tcp, buffer, MAX_LINE-1);*/
 
 			/*if (strncmp(buffer, "CAP", 3) == 0) {*/
-			/*/* number of relevant bytes of message */
+			/* number of relevant bytes of message */
 			/*= buffer length - 'CAP' length - length of two line breaks - end of string */
-			/**/*/
+			/**/
 
 			/*to_capitalize =  (char* ) malloc(sizeof(char*) * (strlen(buffer) - 6));*/
 			/*memcpy(to_capitalize, buffer + 4, strlen(buffer) - 6);*/
@@ -241,7 +240,7 @@ int main(int argc, char *argv[]) {
 
 			/*}*/
 
-			/*   [>/* free the memory */
+			/*   [>* free the memory */
 			memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
 		memset(buffer_send, 0, (sizeof buffer_send[0]) * MAX_LINE);
 	}
@@ -254,5 +253,4 @@ int main(int argc, char *argv[]) {
 	/*else {*/
 	/*fprintf(stderr, "Connection closed.\n");*/
 	/*}*/
-	}
 }
