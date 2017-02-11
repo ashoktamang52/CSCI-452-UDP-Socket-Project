@@ -124,22 +124,22 @@ int main(int argc, char *argv[]) {
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family      = AF_INET;
     servaddr.sin_port        = htons(udp_port);
-
+    servaddr.sin_addr        -= htonl(INADDR_ANY);
 
     /*  Set the remote IP address  */
 
-    if ( inet_aton(szAddress, &servaddr.sin_addr) <= 0 ) {
-    	printf("ECHOCLNT: Invalid remote IP address.\n");
-    	exit(EXIT_FAILURE);
-    }
+    /*if ( inet_aton(szAddress, &servaddr.sin_addr) <= 0 ) {*/
+            /*printf("ECHOCLNT: Invalid remote IP address.\n");*/
+            /*exit(EXIT_FAILURE);*/
+    /*}*/
 
     
-    /*  connect() to the remote echo server  */
+    /*[>  connect() to the remote echo server  <]*/
 
-    if ( connect(socket_udp, (struct sockaddr *) &servaddr, sizeof(servaddr) ) < 0 ) {
-    	printf("ECHOCLNT: Error calling connect()\n");
-    	exit(EXIT_FAILURE);
-    }
+    /*if ( connect(socket_udp, (struct sockaddr *) &servaddr, sizeof(servaddr) ) < 0 ) {*/
+            /*printf("ECHOCLNT: Error calling connect()\n");*/
+            /*exit(EXIT_FAILURE);*/
+    /*}*/
 
 
     /*  Get string to follow user commands */
