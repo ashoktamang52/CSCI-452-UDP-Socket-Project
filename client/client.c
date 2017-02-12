@@ -41,9 +41,11 @@ int main(int argc, char *argv[]) {
 
     int       socket_tcp;                    /*  connection socket                  */
     int	      socket_udp;
+    int       list_s;                     /* listening tcp socket */
     short int tcp_port;                   /*  tcp port number                        */
     short int udp_port;                   /*  udp port number                    */
-    struct    sockaddr_in servaddr;       /*  socket address structure           */
+    struct    sockaddr_in servaddr_udp;       /*  socket address structure           */
+    struct    sockaddr_in servaddr_tcp;   /* tcp socket address structre */
     struct    sockaddr_in remaddr;        /*  remote address               	     */
     socklen_t addrlen = sizeof(remaddr);  /*  length of remote address 	     */
     char     *buffer;           /*  character buffer                   */
@@ -67,11 +69,6 @@ int main(int argc, char *argv[]) {
 
     /*  Set the remote port  */
 
-    /*tcp_port = strtol(tcpPort, &endptr, 0);*/
-    /*if ( *endptr ) {*/
-    /*printf("ECHOCLNT: Invalid port supplied.\n");*/
-    /*exit(EXIT_FAILURE);*/
-    /*}*/
 
 
     /*[>  Create the listening socket  <]*/
@@ -84,13 +81,13 @@ int main(int argc, char *argv[]) {
     /*  Set all bytes in socket address structure to*/
     /*zero, and fill in the relevant data members   */
 
-    /*memset(&servaddr, 0, sizeof(servaddr));*/
-    /*servaddr.sin_family      = AF_INET;*/
-    /*servaddr.sin_port        = htons(tcp_port);*/
+    /*memset(&servaddr_udp, 0, sizeof(servaddr_udp));*/
+    /*servaddr_udp.sin_family      = AF_INET;*/
+    /*servaddr_udp.sin_port        = htons(tcp_port);*/
 
     /*[>  Set the remote IP address  <]*/
 
-    /*if ( inet_aton(szAddress, &servaddr.sin_addr) <= 0 ) {*/
+    /*if ( inet_aton(szAddress, &servaddr_udp.sin_addr) <= 0 ) {*/
     /*printf("ECHOCLNT: Invalid remote IP address.\n");*/
     /*exit(EXIT_FAILURE);*/
     /*}*/
@@ -98,7 +95,7 @@ int main(int argc, char *argv[]) {
 
     /*[>  connect() to the remote echo server  <]*/
 
-    /*if ( connect(socket_tcp, (struct sockaddr *) &servaddr, sizeof(servaddr) ) < 0 ) {*/
+    /*if ( connect(socket_tcp, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp) ) < 0 ) {*/
     /*perror("Connection failed");*/
     /*exit(EXIT_FAILURE);*/
     /*}*/
@@ -123,10 +120,10 @@ int main(int argc, char *argv[]) {
     /*  Set all bytes in socket address structure to
         zero, and fill in the relevant data members   */
 
-    memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family      = AF_INET;
-    servaddr.sin_port        = htons(udp_port);
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    memset(&servaddr_udp, 0, sizeof(servaddr_udp));
+    servaddr_udp.sin_family      = AF_INET;
+    servaddr_udp.sin_port        = htons(udp_port);
+    servaddr_udp.sin_addr.s_addr = htonl(INADDR_ANY);
 
     /*  Get string to follow user commands */
     do {
@@ -151,7 +148,7 @@ int main(int argc, char *argv[]) {
 
             printf("to send length: %d\n", strlen(buffer_send));
             /*Send message to server via UDP*/
-            if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
+            if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp)) < 0) {
                 perror("Send to, failed.");
                 exit(EXIT_FAILURE);
             }
@@ -199,7 +196,7 @@ int main(int argc, char *argv[]) {
             printf("to be send len: %d\n", strlen(buffer_send));
 
             /* Send message to server. */
-            if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
+            if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp)) < 0) {
                 perror("Send to, failed.");
                 exit(EXIT_FAILURE);
             }
@@ -225,9 +222,67 @@ int main(int argc, char *argv[]) {
             temp = (char *) malloc(sizeof(temp) * MAX_LINE);
             strncpy(temp, buffer, strlen(buffer) - 1);
 
-            /*If file doesn't exist.*/
+            /*If file does exist.*/
             if (strcmp(status_token, "OK") == 0) {
                 printf("Transfer started....\n");
+                
+                /*Set up TCP connection*/
+                /*Create the listening socket  */
+
+                /*Free endptr before using*/
+                free(endptr);
+
+                tcp_port = strtol(tcpPort, &endptr, 0);
+                if ( *endptr ) {
+                    printf("ECHOCLNT: Invalid port supplied.\n");
+                    exit(EXIT_FAILURE);
+                }
+                if ((list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+                    perror("ECHOSERV: Error creating listening socket.\n");
+
+                    exit(EXIT_FAILURE);
+                }
+
+
+                /*Set all bytes in socket address structure to*/
+                /*zero, and fill in the relevant data members   */
+
+                memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
+                servaddr_tcp_udp.sin_family      = AF_INET;
+                servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
+                servaddr_tcp.sin_port        = htons(tcp_port);
+
+
+                /*Bind our socket addresss to the */
+                /*listening socket, and call listen()  */
+
+                if ( bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0 ) {
+                    fprintf(stderr, "ECHOSERV: Error calling bind()\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                if ( listen(list_s, LISTENQ) < 0 ) {
+                    perror("ECHOSERV: Error calling listen()\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                while (1) {
+                    /*Wait for a connection, then accept() it  */
+
+                    if ( (socket_tcp = accept(list_s, NULL, NULL) ) < 0 ) {
+                        perror("Error in calling accept():");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    /*Experimental*/
+                    free(buffer);
+                    buffer = (char *) malloc(sizeof(buffer) * MAXLINE);
+                    read(socket_tcp, buffer, MAXLINE);
+
+                    printf("Server responded: %s\n", buffer);
+
+                }
+
             }
             else {
                 printf("%s not found.\n", temp);
@@ -247,10 +302,11 @@ int main(int argc, char *argv[]) {
             /*fclose(fp);*/
 
             /*Free memory*/
-            free(file_name);
             free(buffer);
-            free(buffer_send);
             free(buffer_received);
+            free(buffer_send);
+            free(file_name);
+            free(temp);
         }
             else if (strncmp(buffer, "q", 1) == 0) {
                 fprintf(stderr, "Now should exit.\n");

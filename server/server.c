@@ -69,37 +69,6 @@ int main(int argc, char *argv[]) {
     }
 
     /* TCP connection */	
-    /*  Create the listening socket  */
-
-    /* if ((list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {*/
-    /*perror("ECHOSERV: Error creating listening socket.\n");*/
-
-    /*exit(EXIT_FAILURE);*/
-    /*}*/
-
-
-    /*  Set all bytes in socket address structure to*/
-    /*zero, and fill in the relevant data members   */
-
-    /*memset(&servaddr, 0, sizeof(servaddr));*/
-    /*servaddr.sin_family      = AF_INET;*/
-    /*servaddr.sin_addr.s_addr = htonl(INADDR_ANY);*/
-    /*servaddr.sin_port        = htons(port);*/
-
-
-    /*  Bind our socket addresss to the */
-    /*listening socket, and call listen()  */
-
-    /*if ( bind(list_s, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0 ) {*/
-    /*fprintf(stderr, "ECHOSERV: Error calling bind()\n");*/
-    /*exit(EXIT_FAILURE);*/
-    /*}*/
-
-    /*if ( listen(list_s, LISTENQ) < 0 ) {*/
-    /*perror("ECHOSERV: Error calling listen()\n");*/
-    /*exit(EXIT_FAILURE);*/
-    /*}*/
-
     /*UDP Connection  */
 
     socket_udp = socket(AF_INET, SOCK_DGRAM, 0);
@@ -136,13 +105,6 @@ int main(int argc, char *argv[]) {
             printf("received message: \"%s\"\n", buffer);
         }
         printf("buffer len: %d\n.", strlen(buffer));
-        /*  Wait for a connection, then accept() it  */
-
-        /*         if ( (socket_tcp = accept(list_s, NULL, NULL) ) < 0 ) {*/
-        /*fprintf(stderr, "ECHOSERV: Error calling accept()\n");*/
-        /*exit(EXIT_FAILURE);*/
-        /*}*/
-
 
         if (strncmp(buffer, "CAP", 3) == 0) {
             /*number of relevant bytes of message */
