@@ -162,11 +162,10 @@ int main(int argc, char *argv[]) {
 
 			/*[> parse the capitalized message to send to the client <]*/
 
-			sprintf(buffer_send, "%d", strlen(to_capitalize));
-			strcat(buffer_send, "\n");
 			strcat(buffer_send, to_capitalize);
-
-			printf("to send: %s\n", to_capitalize);
+			strcat(buffer_send, "\n");
+			
+			printf("to send: %s\n", buffer_send);
 			/*[> send the formatted message to the client <]*/
 
 			int sentlen = 0;

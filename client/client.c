@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 	short int tcp_port;                   /*  tcp port number                        */
 	short int udp_port;                   /*  udp port number                    */
 	struct    sockaddr_in servaddr;       /*  socket address structure           */
-	struct    sockaddr_in_remaddr;        /*  remote address               	     */
+	struct    sockaddr_in remaddr;        /*  remote address               	     */
 	socklen_t addrlen = sizeof(remaddr);  /*  length of remote address 	     */
 	char      buffer[MAX_LINE];           /*  character buffer                   */
 	char      buffer_send[MAX_LINE];      /*  Holds message to be send to server */
@@ -151,8 +151,8 @@ int main(int argc, char *argv[]) {
 			int recvlen = 0;
 			recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
 			if (recvlen > 0) {
-				buffer[recvlen] = 0;
-				printf("received message: \"%s\n", buffer);
+				buffer_received[recvlen] = 0;
+				printf("Server responded: \"%s\n", buffer);
 			}
 
 			/*read(socket_tcp, buffer_received, MAX_LINE-1);*/
