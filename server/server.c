@@ -185,18 +185,54 @@ int main(int argc, char *argv[]) {
             file_name = (char *) malloc (sizeof(char*) * recvlen);
             /*tcp_port = (s<]hort int *) malloc (sizeof(tcp_port) * 4); [> 4 digits for port number. */
             endptr = (char *) malloc(sizeof(endptr) * 10);
+            
+            char *token; /*for parsing the message into file name and port */
+            const char delim = '\n';
+            token = (char *) malloc(sizeof(token) * strlen(buffer)+1);
+            strcpy(token, buffer);
+            token = strtok(token, "\n"); 
 
-            /*file_name is in the range [buffer[5], buffer[buffer_len - 5]*/
-            strncpy(file_name, buffer + 5, recvlen - 10);
-            strncpy(endptr, buffer + (strlen(buffer) - 5), 4);
+            /*Walk through other tokens.*/
+            int position = 0; /* Position: 1 = FILE, 2 = <file name>, 3 = TCP port */
+            while (token != NULL) {
+                if (position == 1)
+                    strcpy(file_name, token);
+                if (position == 2)
+                    strcpy(endptr, token);
+                if (position > 2) 
+                    break;
+                position++;
+                token = strtok(NULL, "\n");
+            }
+                
+            /*Null terminate the string.*/
+            file_name[strlen(buffer) + 5 - (recvlen - 11)] = '\0';
+
+            /*Experiment*/
+            /*int linebrk_counter = 0;*/
+            /*int offset = 0;*/
+            /*while (offset < recvlen) {*/
+                /*if (strcmp(buffer + offset, "\n") == 0) {*/
+                    /*linebrk_counter++; */
+                    /*printf("line broke up!! :(");*/
+                /*}*/
+                /*if (linebrk_counter == 1) {*/
+                    /*continue;*/
+                /*}*/
+                /*if (linebrk_counter >= 2)*/
+                    /*break;*/
+                /*offset++;*/
+            /*}*/
 
             /*Check if the file exists.*/
+            printf("Search file: %s.\n", file_name);
+            printf("TCP port in string: %s\n", endptr);
 
             /* Find file name and read that file */
             fp = fopen(file_name, "rb");
             if (fp) {
                
-                printf("Do you even go here?");
+                printf("Do you even go here?\n");
                 /*Read the file and file size.*/
                 long lSize;
                 void* large_buffer;
@@ -211,15 +247,16 @@ int main(int argc, char *argv[]) {
                 
                 /*Format status message.*/
                
-                temp = (char *) malloc(sizeof(temp) * lSize);
+                temp = (char *) malloc(sizeof(temp) * MAX_LINE);
                 buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
                
-                sprintf(temp, "%l", lSize);
+                /*sprintf(temp, "%d", lSize);*/
+                printf("size of file: %Ld\n", lSize);
                 strcpy(buffer_send, "OK\n");
                 strcat(buffer_send, temp);
                 strcat(buffer_send, "\n");
 
-                printf("stats ok mesg: %s", buffer_send);
+                printf("stats ok mesg: %s\n", buffer_send); /*debug*/
 
 
                 /* allocate memory to hold the whole file */
@@ -237,11 +274,16 @@ int main(int argc, char *argv[]) {
                 /* close the file and later free the large_buffer */
                 fclose(fp);
 
-                free(file_name);
-                /*free(tcp_port);*/
-                free(endptr);
-                free(buffer);
+                /* free memory from local pointers */
+                free(temp);
+                free(buffer_send);
+                free(large_buffer);
             }
+
+            free(file_name);
+            /*free(tcp_port);*/
+            free(endptr);
+            free(buffer);
         }
     }
 }
