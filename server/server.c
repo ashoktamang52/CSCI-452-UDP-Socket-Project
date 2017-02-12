@@ -241,7 +241,7 @@ int main(int argc, char *argv[]) {
                 printf("stats ok mesg: %s\n", buffer_send); /*debug*/
 
                 /*Send Status message to client.*/
-                if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen)) < 0) {
+                if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen) < 0) {
                     perror("Failed to send status.");
                     exit(EXIT_FAILURE);
                 }
@@ -266,6 +266,25 @@ int main(int argc, char *argv[]) {
                 free(temp);
                 free(buffer_send);
                 free(large_buffer);
+            }
+            else {
+                /*Inform client that file doesn't exist*/
+               buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
+               strcpy(buffer_send, "NOT FOUND\n");
+
+               printf("to send: %s\n", buffer_send);
+               printf("to send len: %d\n", strlen(buffer_send));
+
+               /*Send message to client.*/
+               
+               if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen) < 0) {
+                   perror("Failed to send no file status.");
+                   exit(EXIT_FAILURE);
+               }
+
+               /*Free memory from local pointers.*/
+               free(buffer_send);
+
             }
 
             free(file_name);
