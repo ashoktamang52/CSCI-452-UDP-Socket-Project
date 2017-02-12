@@ -145,8 +145,8 @@ int main(int argc, char *argv[]) {
 			/*number of relevant bytes of message */
 			/*= buffer length - 'CAP' length - length of two line breaks - end of string */
 
-			memcpy(to_capitalize, buffer + 4, strlen(buffer));
-
+			memmove(to_capitalize, buffer + 4, strlen(buffer) - 4);
+			printf("what to upper?: %s", to_capitalize);
 			/*[> Capitalize the messsage <]*/
 			int index = 0;
 			while (to_capitalize[index] != '\0') {
@@ -159,12 +159,12 @@ int main(int argc, char *argv[]) {
 				index++;
 			}
 
+
 			/*[> parse the capitalized message to send to the client <]*/
 
 			strcat(buffer_send, to_capitalize);
-			strcat(buffer_send, "\n");
-			
-			printf("to send: %s\n", buffer_send);
+
+			printf("to send: %s\n", to_capitalize);
 			/*[> send the formatted message to the client <]*/
 
 			int sentlen = 0;
