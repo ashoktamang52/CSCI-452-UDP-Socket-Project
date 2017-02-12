@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
             int sentlen = 0;
 
             /*strlen doesn't return the length including null terminator.*/
-            sentlen = sendto(socket_udp, to_capitalize, strlen(to_capitalize) + 1, 0, (struct sockaddr *) &remaddr, addrlen);
+            sentlen = sendto(socket_udp, to_capitalize, strlen(to_capitalize), 0, (struct sockaddr *) &remaddr, addrlen);
             if (sentlen < 0) {
                 perror("Sending failed.");
             }
@@ -181,10 +181,12 @@ int main(int argc, char *argv[]) {
         if (strncmp(buffer, "FILE", 4) == 0) {
             file_name = (char* ) malloc (sizeof(char*) * (strlen(buffer)));
             tcp_port = (short int *) malloc (sizeof(tcp_port) * 4); /* 4 digits for port number. */
-            strncpy(tcp_port, buffer + (strlen(buffer) - 5), 4);
+            strncpy(endptr, buffer + (strlen(buffer) - 5), 4);
             printf("chusyo tcp_port?: %s", tcp_port);
             
-            
+            free(file_name);
+            free(tcp_port);
+            free(buffer);
         }
         /*[> Find file name and read that file <]*/
         /*fp = fopen(file_name, "rb");*/

@@ -191,9 +191,9 @@ int main(int argc, char *argv[]) {
             printf("before port is attached: %s", buffer_send);
             
             strcat(buffer_send, tcpPort);
+            strcat(buffer_send, "\n");
 
             /*Debug*/
-            printf("tcp port: %d\n", tcp_port);
             printf("to be send: %s\n", buffer_send);
             printf("to be send len: %d\n", strlen(buffer_send));
 
