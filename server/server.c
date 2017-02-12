@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 	char      buffer[MAX_LINE];      /*  character buffer          */
 	char      buffer_send[MAX_LINE];
 	char     *endptr;                /*  for strtol()              */
-	char     *to_capitalize;         /*  store user string to capitalize */
+	char     to_capitalize[MAX_LINE];         /*  store user string to capitalize */
 	char     *file_name;             /*  for storing file_name to be searched in the server */
 	FILE     *fp;                    /*  file pointer */
 
@@ -145,8 +145,7 @@ int main(int argc, char *argv[]) {
 			/*number of relevant bytes of message */
 			/*= buffer length - 'CAP' length - length of two line breaks - end of string */
 
-			to_capitalize =  (char* ) malloc(sizeof(char*) * (strlen(buffer) - 6));
-			memcpy(to_capitalize, buffer + 4, strlen(buffer) - 6);
+			memcpy(to_capitalize, buffer + 4, strlen(buffer));
 
 			/*[> Capitalize the messsage <]*/
 			int index = 0;
@@ -175,8 +174,7 @@ int main(int argc, char *argv[]) {
 				perror("Sending failed.");
 			}
 			/*[> free the memory <]*/
-			free(to_capitalize);
-
+			to_capitalize[0] = 0;
 		}
 
 		/*if (strncmp(buffer, "FILE", 4) == 0) {*/
