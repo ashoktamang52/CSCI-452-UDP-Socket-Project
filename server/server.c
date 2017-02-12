@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
     char     *endptr;                /*  for strtol()              */
     char     *to_capitalize;         /*  store user string to capitalize */
     char     *file_name;             /*  for storing file_name to be searched in the server */
+    char     *temp                   /*  for temporary storage of strings; for formatting */
     FILE     *fp;                    /*  file pointer */
 
 
@@ -181,83 +182,104 @@ int main(int argc, char *argv[]) {
         if (strncmp(buffer, "FILE", 4) == 0) {
 
             /*Allocate memory*/
-            file_name = /*(char *) malloc (sizeof(char*) * recvlen);*/
+            file_name = (char *) malloc (sizeof(char*) * recvlen);
             /*tcp_port = (s<]hort int *) malloc (sizeof(tcp_port) * 4); [> 4 digits for port number. */
             endptr = (char *) malloc(sizeof(endptr) * 10);
 
-
+            /*file_name is in the range [buffer[5], buffer[buffer_len - 5]*/
+            strncpy(file_name, buffer + 5, recvlen - 10);
             strncpy(endptr, buffer + (strlen(buffer) - 5), 4);
-            printf("chusyo tcp_port?: %s", tcp_port);
-            
+
+            /*Check if the file exists.*/
+
+            /* Find file name and read that file */
+            fp = fopen(file_name, "rb");
+            if (fp) {
+               
+
+                /*Read the file and file size.*/
+                long lSize;
+                void* large_buffer;
+                size_t result;
+
+                /* obtain file size */
+                fseek(fp, 0, SEEK_END);
+                lSize = ftell(fp);
+                rewind(fp); /* Put the postion of pointer back to the start of the file */
+                
+                /*Inform client that file exists.*/
+                
+                /*Format status message.*/
+               
+                temp = (char *) malloc(sizeof(temp) * lSize);
+                buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
+               
+                sprintf(temp, "%l", lSize);
+                strcpy(buffer_send, "OK\n");
+                strcat(buffer_send, temp);
+                strcat(buffer_send, "\n");
+
+                printf("stats ok mesg: %s", buffer_send);
+
+
+                /* allocate memory to hold the whole file */
+                large_buffer = (void* ) malloc(sizeof(void*) * lSize);
+                if (large_buffer == NULL) {
+                    perror("Error in allocating required memory: ");
+                }
+
+                /* copy the file into the buffer */
+                result = fread(large_buffer, 1, lSize, fp);
+                if (result != lSize) {
+                    printf("Error reading whole file.\n");
+                }
+
+                /* close the file and later free the large_buffer */
+                fclose(fp);
+
+                free(file_name);
+                /*free(tcp_port);*/
+                free(endptr);
+                free(buffer);
+            }
+
+            /*[> send the buffer to the client <]*/
+            /*if (MAX_LINE < lSize) {*/
+            /*strcpy(buffer_send, "The buffer size is smaller than what needs to be sent.");*/
+            /*write(socket_tcp, buffer_send, strlen(buffer_send));*/
+            /*}*/
+            /*else {*/
+            /*sprintf(buffer_send, "%d", lSize);*/
+            /*strcat(buffer_send, "\n");*/
+            /*strcat(buffer_send, large_buffer);*/
+            /*write(socket_tcp, buffer_send, lSize);*/
+            /*}*/
+
+            /*[> free the memory <]*/
+            /*free(large_buffer);*/
             /*free(file_name);*/
-            /*free(tcp_port);*/
-            free(endptr);
-            free(buffer);
-        }
-        /*[> Find file name and read that file <]*/
-        /*fp = fopen(file_name, "rb");*/
-        /*if (fp) {*/
-        /*long lSize;*/
-        /*void* large_buffer;*/
-        /*size_t result;*/
+            /*} else {*/
+            /*[> No such file <]*/
+            /*strcpy(buffer, "NOT FOUND");*/
+            /*sprintf(buffer_send, "%d", strlen(buffer));*/
+            /*strcat(buffer_send, "\n");*/
+            /*strcat(buffer_send, buffer);*/
 
-        /*[> obtain file size <]*/
-        /*fseek(fp, 0, SEEK_END);*/
-        /*lSize = ftell(fp);*/
-        /*rewind(fp); [> Put the postion of pointer back to the start of the file <]*/
+            /*[> Inform client that file is not in the server. <]*/
+            /*write(socket_tcp, buffer_send, strlen(buffer_send));*/
+            /*}*/
 
-        /*[> allocate memory to hold the whole file <]*/
-        /*large_buffer = (void* ) malloc(sizeof(void*) * lSize);*/
-        /*if (large_buffer == NULL) {*/
-        /*perror("Error in allocating required memory: ");*/
-        /*}*/
+            /*}*/
 
-        /*[> copy the file into the buffer <]*/
-        /*result = fread(large_buffer, 1, lSize, fp);*/
-        /*if (result != lSize) {*/
-        /*printf("Error reading whole file.\n");*/
-        /*}*/
+            /*   [>* free the memory */
 
-        /*[> close the file and later free the large_buffer <]*/
-        /*fclose(fp);*/
-
-        /*[> send the buffer to the client <]*/
-        /*if (MAX_LINE < lSize) {*/
-        /*strcpy(buffer_send, "The buffer size is smaller than what needs to be sent.");*/
-        /*write(socket_tcp, buffer_send, strlen(buffer_send));*/
-        /*}*/
-        /*else {*/
-        /*sprintf(buffer_send, "%d", lSize);*/
-        /*strcat(buffer_send, "\n");*/
-        /*strcat(buffer_send, large_buffer);*/
-        /*write(socket_tcp, buffer_send, lSize);*/
-        /*}*/
-
-        /*[> free the memory <]*/
-        /*free(large_buffer);*/
-        /*free(file_name);*/
-        /*} else {*/
-        /*[> No such file <]*/
-        /*strcpy(buffer, "NOT FOUND");*/
-        /*sprintf(buffer_send, "%d", strlen(buffer));*/
-        /*strcat(buffer_send, "\n");*/
-        /*strcat(buffer_send, buffer);*/
-
-        /*[> Inform client that file is not in the server. <]*/
-        /*write(socket_tcp, buffer_send, strlen(buffer_send));*/
-        /*}*/
-
-        /*}*/
-
-        /*   [>* free the memory */
-
-        /*  Close the connected socket  */
-        /*         if ( close(socket_tcp) < 0 ) {*/
-        /*perror("ECHOSERV: Error calling close()\n");*/
-        /*exit(EXIT_FAILURE);*/
-        /*}*/
-        /*else {*/
-        /*fprintf(stderr, "Connection closed.\n");*/
-        /*}*/
-    }
+            /*  Close the connected socket  */
+            /*         if ( close(socket_tcp) < 0 ) {*/
+            /*perror("ECHOSERV: Error calling close()\n");*/
+            /*exit(EXIT_FAILURE);*/
+            /*}*/
+            /*else {*/
+            /*fprintf(stderr, "Connection closed.\n");*/
+            /*}*/
+}
 }
