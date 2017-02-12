@@ -204,25 +204,7 @@ int main(int argc, char *argv[]) {
                 position++;
                 token = strtok(NULL, "\n");
             }
-                
-            /*Null terminate the string.*/
-            file_name[strlen(buffer) + 5 - (recvlen - 11)] = '\0';
 
-            /*Experiment*/
-            /*int linebrk_counter = 0;*/
-            /*int offset = 0;*/
-            /*while (offset < recvlen) {*/
-                /*if (strcmp(buffer + offset, "\n") == 0) {*/
-                    /*linebrk_counter++; */
-                    /*printf("line broke up!! :(");*/
-                /*}*/
-                /*if (linebrk_counter == 1) {*/
-                    /*continue;*/
-                /*}*/
-                /*if (linebrk_counter >= 2)*/
-                    /*break;*/
-                /*offset++;*/
-            /*}*/
 
             /*Check if the file exists.*/
             printf("Search file: %s.\n", file_name);
@@ -250,13 +232,19 @@ int main(int argc, char *argv[]) {
                 temp = (char *) malloc(sizeof(temp) * MAX_LINE);
                 buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
                
-                /*sprintf(temp, "%d", lSize);*/
+                sprintf(temp, "%Ld", lSize);
                 printf("size of file: %Ld\n", lSize);
                 strcpy(buffer_send, "OK\n");
                 strcat(buffer_send, temp);
                 strcat(buffer_send, "\n");
 
                 printf("stats ok mesg: %s\n", buffer_send); /*debug*/
+
+                /*Send Status message to client.*/
+                if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
+                    perror("Failed to send status.");
+                    exit(EXIT_FAILURE);
+                }
 
 
                 /* allocate memory to hold the whole file */

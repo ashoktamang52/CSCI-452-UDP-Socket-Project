@@ -203,6 +203,16 @@ int main(int argc, char *argv[]) {
                 exit(EXIT_FAILURE);
             }
 
+            /*Recieve status from server.*/
+            int recvlen = 0;
+            buffer_reeived = (char *) malloc(sizeof(buffer_received) * MAX_LINE);
+            recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
+            if (recvlen > 0) {
+                buffer_received[recvlen] = '\0';
+                printf("total bytest received: %d.\n", recvlen);
+                printf("Server responded: %s\n", buffer_received);
+            }
+
             /*[> Read message from server. <]*/
             /*read(socket_tcp, buffer_received, MAX_LINE-1);*/
 
