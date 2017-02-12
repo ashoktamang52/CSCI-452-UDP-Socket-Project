@@ -42,10 +42,10 @@ int main(int argc, char *argv[]) {
     struct    sockaddr_in servaddr;  /*  socket address structure  */
     struct sockaddr_in remaddr;  /* remote address */
     socklen_t addrlen = sizeof(remaddr); /* length of remote address */
-    char      buffer[MAX_LINE];      /*  character buffer          */
-    char      buffer_send[MAX_LINE];
+    char     *buffer;      /*  character buffer          */
+    char     *buffer_send;
     char     *endptr;                /*  for strtol()              */
-    char     to_capitalize[MAX_LINE];         /*  store user string to capitalize */
+    char     *to_capitalize;         /*  store user string to capitalize */
     char     *file_name;             /*  for storing file_name to be searched in the server */
     FILE     *fp;                    /*  file pointer */
 
@@ -126,6 +126,7 @@ int main(int argc, char *argv[]) {
         /*UDP connection*/
         printf("Waiting on port %d\n", port);
         int recvlen = 0;
+        buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
         recvlen = recvfrom(socket_udp, buffer, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
         printf("recieved %d bytes\n", recvlen);
         if (recvlen > 0) {
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]) {
         if (strncmp(buffer, "CAP", 3) == 0) {
             /*number of relevant bytes of message */
             /*= buffer length - 'CAP' length - length of two line breaks - end of string */
-
+            to_capitalize = (char *) malloc(sizeof(to_capitalize) * strlen(buffer));
             strncpy(to_capitalize, buffer + 4, recvlen - 4);
             printf("what to upper?: %s", to_capitalize);
             /*[> Capitalize the messsage <]*/
@@ -165,15 +166,14 @@ int main(int argc, char *argv[]) {
             printf("to send length: %d\n", strlen(to_capitalize));
             /*[> send the formatted message to the client <]*/
             /*Add null char at the end*/
-            to_capitalize[strlen(to_capitalize)] = '\0';
             int sentlen = 0;
             sentlen = sendto(socket_udp, to_capitalize, strlen(to_capitalize), 0, (struct sockaddr *) &remaddr, addrlen);
             if (sentlen < 0) {
                 perror("Sending failed.");
             }
             /*[> free the memory <]*/
-            to_capitalize[0] = '\0';
-            buffer[0] = '\0';
+            free(to_capitalize);
+            free(buffer);
         }
 
         /*if (strncmp(buffer, "FILE", 4) == 0) {*/

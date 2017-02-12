@@ -129,25 +129,24 @@ int main(int argc, char *argv[]) {
 
     /*  Get string to follow user commands */
     do {
-        buffer = (char *) malloc(sizeof(char *) * MAX_LINE);
+        buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
         printf("Insert your command: ");
         fgets(buffer, MAX_LINE, stdin);
 
         if (strncmp(buffer, "s", 1) == 0) {
             /*Reset buffer to get the string.*/
             free(buffer);
-            buffer =  malloc(sizeof(char *) * MAX_LINE);
+            buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
             
             printf("\nPlease Enter a string: ");
             fgets(buffer, MAX_LINE, stdin);
            
             /*CAP + 2 new lines + null terminator = 6*/
-            buffer_send =  malloc(sizeof(char *) * (strlen(buffer) + 6)); 
-            
+            buffer_send =  (char *) malloc(sizeof(buffer_send) * (strlen(buffer) + 6)); 
+            printf("size of buffer: %d\n", strlen(buffer));
             /* Format the input string */
             strcpy(buffer_send, "CAP\n");
             strcat(buffer_send, buffer);
-            strcat(buffer_send, "\n");
             
             printf("to send length: %d\n", strlen(buffer_send));
             /*Send message to server via UDP*/
@@ -158,29 +157,30 @@ int main(int argc, char *argv[]) {
 
             /*Read message back from server via UDP*/
             int recvlen = 0;
+            buffer_received = (char *) malloc(sizeof(buffer_received) * MAX_LINE);
             recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
             if (recvlen > 0) {
-                buffer_received[recvlen] = '\0';
+                /*buffer_received[recvlen] = '\0';*/
                 printf("Server responded: %s\n", buffer_received);
             }
 
 
             /* reset buffer to get only relevant string */
             free(buffer);
-            buffer_received[0] = '/0';
+            free(buffer_received);
             free(buffer_send); 
             /*printf("Server responded: %s", buffer);*/
         }
         else if (strncmp(buffer, "t", 1) == 0) {
-            printf("\nPlease Enter a string: ");
-            fgets(buffer, MAX_LINE, stdin);
+        /*    printf("\nPlease Enter a string: ");*/
+            /*fgets(buffer, MAX_LINE, stdin);*/
 
-            file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));
-            memcpy(file_name, buffer, strlen(buffer) - 1);  
+            /*file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));*/
+            /*memcpy(file_name, buffer, strlen(buffer) - 1);  */
 
             /* Format the input string */
-            strcpy(buffer_send, "FILE\n");
-            strcat(buffer_send, buffer);
+          /*  strcpy(buffer_send, "FILE\n");*/
+            /*strcat(buffer_send, buffer);*/
 
             /* Send message to server. */
             /*          write(socket_tcp, buffer_send, strlen(buffer_send));*/
@@ -212,12 +212,6 @@ int main(int argc, char *argv[]) {
         }
         else 
             printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
-
-        /* free the memory */
-        memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
-        memset(buffer_send, 0, (sizeof buffer_send[0]) * MAX_LINE);
-        memset(buffer_received, 0, (sizeof buffer_received[0]) * MAX_LINE);
-
     } while (strncmp(buffer, "q", 1) != 0);
 
     return EXIT_SUCCESS;
