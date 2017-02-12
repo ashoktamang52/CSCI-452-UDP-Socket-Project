@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
     char     *endptr;                     /*  for strtol()                       */
     FILE     *fp;                         /*  file pointer                       */
     char     *file_name;                  /*  for creating and writing data into */
+    char     *temp;                       /*  temp storage, for formatting/printing */
 
 
     /*  Get command line arguments  */
@@ -220,12 +221,16 @@ int main(int argc, char *argv[]) {
             status_token = strtok(status_token, "\n");
             printf("status?: %s\n", status_token);
 
+            /*Holds file name without new line character.*/
+            temp = (char *) malloc(sizeof(temp) * MAX_LINE);
+            strncpy(temp, buffer, strlen(buffer) - 1);
+
             /*If file doesn't exist.*/
-            if (strcmp(status_token, "OK")) {
+            if (strcmp(status_token, "OK") == 0) {
                 printf("Transfer started....\n");
             }
             else {
-                printf("%s not found.\n", buffer);
+                printf("%s not found.\n", temp);
             }
 
 
