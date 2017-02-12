@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
     struct    sockaddr_in servaddr;       /*  socket address structure           */
     struct    sockaddr_in remaddr;        /*  remote address               	     */
     socklen_t addrlen = sizeof(remaddr);  /*  length of remote address 	     */
-    char      buffer[MAX_LINE];           /*  character buffer                   */
-    char      buffer_send[MAX_LINE];      /*  Holds message to be send to server */
-    char      buffer_received[MAX_LINE];  /*  Holds message send by server       */
+    char     *buffer;           /*  character buffer                   */
+    char     *buffer_send;      /*  Holds message to be send to server */
+    char     *buffer_received;  /*  Holds message send by server       */
     char     *szAddress;                  /*  Holds remote IP address            */
     char     *udpPort;			 /* Holds server upd port */
     char     *tcpPort;                     /*  Holds server tcp port                  */
@@ -129,22 +129,27 @@ int main(int argc, char *argv[]) {
 
     /*  Get string to follow user commands */
     do {
+        buffer = (char *) malloc(sizeof(char *) * MAX_LINE);
         printf("Insert your command: ");
         fgets(buffer, MAX_LINE, stdin);
 
         if (strncmp(buffer, "s", 1) == 0) {
             /*Reset buffer to get the string.*/
-            buffer[0] = 0;
+            free(buffer);
+            buffer =  malloc(sizeof(char *) * MAX_LINE);
+            
             printf("\nPlease Enter a string: ");
             fgets(buffer, MAX_LINE, stdin);
-
+           
+            /*CAP + 2 new lines + null terminator = 6*/
+            buffer_send =  malloc(sizeof(char *) * (strlen(buffer) + 6)); 
+            
             /* Format the input string */
             strcpy(buffer_send, "CAP\n");
             strcat(buffer_send, buffer);
             strcat(buffer_send, "\n");
             
             printf("to send length: %d\n", strlen(buffer_send));
-            buffer_send[strlen(buffer_send)] = 0; /*Experiment*/
             /*Send message to server via UDP*/
             if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
                 perror("Send to, failed.");
@@ -155,15 +160,15 @@ int main(int argc, char *argv[]) {
             int recvlen = 0;
             recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
             if (recvlen > 0) {
-                buffer_received[recvlen] = 0;
+                buffer_received[recvlen] = '\0';
                 printf("Server responded: %s\n", buffer_received);
             }
 
 
             /* reset buffer to get only relevant string */
-            buffer[0] = 0;
-            buffer_received[0] = 0;
-            buffer_send[0] = 0;
+            free(buffer);
+            buffer_received[0] = '/0';
+            free(buffer_send); 
             /*printf("Server responded: %s", buffer);*/
         }
         else if (strncmp(buffer, "t", 1) == 0) {

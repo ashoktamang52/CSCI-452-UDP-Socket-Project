@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
         recvlen = recvfrom(socket_udp, buffer, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
         printf("recieved %d bytes\n", recvlen);
         if (recvlen > 0) {
-            buffer[recvlen] = 0;
+            buffer[recvlen] = '\0';
             printf("received message: \"%s\"\n", buffer);
         }
 
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
             printf("what to upper?: %s", to_capitalize);
             /*[> Capitalize the messsage <]*/
             int index = 0;
-            while (to_capitalize[index] != 0) {
+            while (to_capitalize[index] != '\0') {
                 if (islower(to_capitalize[index])) {
                     to_capitalize[index] = toupper(to_capitalize[index]);
                 }
@@ -165,15 +165,15 @@ int main(int argc, char *argv[]) {
             printf("to send length: %d\n", strlen(to_capitalize));
             /*[> send the formatted message to the client <]*/
             /*Add null char at the end*/
-            to_capitalize[strlen(to_capitalize)] = 0;
+            to_capitalize[strlen(to_capitalize)] = '\0';
             int sentlen = 0;
             sentlen = sendto(socket_udp, to_capitalize, strlen(to_capitalize), 0, (struct sockaddr *) &remaddr, addrlen);
             if (sentlen < 0) {
                 perror("Sending failed.");
             }
             /*[> free the memory <]*/
-            to_capitalize[0] = 0;
-            buffer[0] = 0;
+            to_capitalize[0] = '\0';
+            buffer[0] = '\0';
         }
 
         /*if (strncmp(buffer, "FILE", 4) == 0) {*/
