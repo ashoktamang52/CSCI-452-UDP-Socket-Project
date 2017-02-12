@@ -176,9 +176,9 @@ int main(int argc, char *argv[]) {
             free(buffer);
         }
 
-        /*if (strncmp(buffer, "FILE", 4) == 0) {*/
-        /*file_name = (char* ) malloc (sizeof(char*) * (strlen(buffer) - 6));*/
-        /*memcpy(file_name, buffer + 5, strlen(buffer) - 6);*/
+        if (strncmp(buffer, "FILE", 4) == 0) {
+            file_name = (char* ) malloc (sizeof(char*) * (strlen(buffer)));
+            memcpy(file_name, buffer + 5, strlen(buffer) - 6);
 
         /*[> Find file name and read that file <]*/
         /*fp = fopen(file_name, "rb");*/

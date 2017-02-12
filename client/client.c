@@ -188,6 +188,10 @@ int main(int argc, char *argv[]) {
             /*Format the input string */
             strcpy(buffer_send, "FILE\n");
             strcat(buffer_send, buffer);
+            sprintf(buffer_send, "%d", tcp_port);
+
+            printf("to be send: %s", buffer_send);
+            printf("to be send len: %d", strlen(buffer_send));
 
             /* Send message to server. */
             if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
