@@ -213,8 +213,12 @@ int main(int argc, char *argv[]) {
                 printf("Server responded: %s\n", buffer_received);
             }
 
-            /*[> Read message from server. <]*/
-            /*read(socket_tcp, buffer_received, MAX_LINE-1);*/
+
+            /*Check status of file from server.*/
+            char *status_token = (char *) malloc(sizeof(status_token) * MAX_LINE);
+            strcpy(status_token, buffer_received);
+            status_token = strtok(status_token, "\n");
+            printf("status?: %s\n", status_token);
 
             /*[> write the data to the file. <]*/
             /*if (strncmp(buffer_received + 2, "NOT FOUND", 9) == 0) {*/
