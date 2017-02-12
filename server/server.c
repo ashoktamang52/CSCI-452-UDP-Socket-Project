@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
             printf("what to upper?: %s", to_capitalize);
             /*[> Capitalize the messsage <]*/
             int index = 0;
-            while (to_capitalize[index] < strlen(buffer) - 4) {
+            while (to_capitalize[index] != 0) {
                 if (islower(to_capitalize[index])) {
                     to_capitalize[index] = toupper(to_capitalize[index]);
                 }
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
 
             /*[> parse the capitalized message to send to the client <]*/
             printf("to send: %s\n", to_capitalize);
-            printf("to send length: %d\n", strlen(to_capitalize));
+            printf("to send length: %d\n", strlen(to_capitalize);
             /*[> send the formatted message to the client <]*/
 
             int sentlen = 0;
