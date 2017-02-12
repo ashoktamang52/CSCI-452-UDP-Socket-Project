@@ -144,6 +144,7 @@ int main(int argc, char *argv[]) {
             strcat(buffer_send, "\n");
             
             printf("to send length: %d\n", strlen(buffer_send));
+            buffer_send[strlen(buffer_send)] = 0; /*Experiment*/
             /*Send message to server via UDP*/
             if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
                 perror("Send to, failed.");

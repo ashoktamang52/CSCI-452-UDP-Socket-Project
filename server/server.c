@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
             /*number of relevant bytes of message */
             /*= buffer length - 'CAP' length - length of two line breaks - end of string */
 
-            memmove(to_capitalize, buffer + 4, strlen(buffer) - 4);
+            strncpy(to_capitalize, buffer + 4, recvlen - 4);
             printf("what to upper?: %s", to_capitalize);
             /*[> Capitalize the messsage <]*/
             int index = 0;
@@ -162,13 +162,13 @@ int main(int argc, char *argv[]) {
 
             /*[> parse the capitalized message to send to the client <]*/
             printf("to send: %s\n", to_capitalize);
-            printf("to send length: %d\n", strlen(to_capitalize);
+            printf("to send length: %d\n", strlen(to_capitalize));
             /*[> send the formatted message to the client <]*/
-
+            /*Add null char at the end*/
+            to_capitalize[strlen(to_capitalize)] = 0;
             int sentlen = 0;
             sentlen = sendto(socket_udp, to_capitalize, strlen(to_capitalize), 0, (struct sockaddr *) &remaddr, addrlen);
             if (sentlen < 0) {
-                buffer_send[sentlen] = 0;
                 perror("Sending failed.");
             }
             /*[> free the memory <]*/
