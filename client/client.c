@@ -137,17 +137,17 @@ int main(int argc, char *argv[]) {
             /*Reset buffer to get the string.*/
             free(buffer);
             buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
-            
+
             printf("\nPlease Enter a string: ");
             fgets(buffer, MAX_LINE, stdin);
-           
+
             /*CAP + 2 new lines + null terminator = 6*/
             buffer_send =  (char *) malloc(sizeof(buffer_send) * (strlen(buffer))); 
             printf("size of buffer: %d\n", strlen(buffer));
             /* Format the input string */
             strcpy(buffer_send, "CAP\n");
             strcat(buffer_send, buffer);
-            
+
             printf("to send length: %d\n", strlen(buffer_send));
             /*Send message to server via UDP*/
             if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
@@ -173,18 +173,27 @@ int main(int argc, char *argv[]) {
             /*printf("Server responded: %s", buffer);*/
         }
         else if (strncmp(buffer, "t", 1) == 0) {
-        /*    printf("\nPlease Enter a string: ");*/
-            /*fgets(buffer, MAX_LINE, stdin);*/
+            /*Reset buffer to get the string.*/
+            free(buffer);
+            buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
 
-            /*file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));*/
-            /*memcpy(file_name, buffer, strlen(buffer) - 1);  */
+            printf("\nPlease Enter a string: ");
+            fgets(buffer, MAX_LINE, stdin);
 
-            /* Format the input string */
-          /*  strcpy(buffer_send, "FILE\n");*/
-            /*strcat(buffer_send, buffer);*/
+           file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));
+           strncpy(file_name, buffer, strlen(buffer) - 1);
+
+           buffer_send = (char *) malloc(sizeof(buffer_send) * strlen(buffer) + 10);
+
+            /*Format the input string */
+            strcpy(buffer_send, "FILE\n");
+            strcat(buffer_send, buffer);
 
             /* Send message to server. */
-            /*          write(socket_tcp, buffer_send, strlen(buffer_send));*/
+            if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
+                perror("Send to, failed.");
+                exit(EXIT_FAILURE);
+            }
 
             /*[> Read message from server. <]*/
             /*read(socket_tcp, buffer_received, MAX_LINE-1);*/
@@ -199,8 +208,11 @@ int main(int argc, char *argv[]) {
             /*printf("Server responded: Data is written to the file named: %s\n", file_name);*/
             /*[> close the file and free the memory <]*/
             /*fclose(fp);*/
-            /*free(file_name);*/
-            /*}*/
+
+            /*Free memory*/
+            free(file_name);
+            free(buffer);
+            free(buffer_send);
         }
         else if (strncmp(buffer, "q", 1) == 0) {
             fprintf(stderr, "Now should exit.\n");
