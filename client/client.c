@@ -220,6 +220,16 @@ int main(int argc, char *argv[]) {
             status_token = strtok(status_token, "\n");
             printf("status?: %s\n", status_token);
 
+            /*If file doesn't exist.*/
+            if (strcmp(status_token, "OK")) {
+                printf("Transfer started....\n");
+            }
+            else {
+                printf("%s not found.\n", buffer);
+            }
+
+
+
             /*[> write the data to the file. <]*/
             /*if (strncmp(buffer_received + 2, "NOT FOUND", 9) == 0) {*/
             /*printf("Server responded: %s\n", buffer_received + 2);*/
