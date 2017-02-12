@@ -180,18 +180,22 @@ int main(int argc, char *argv[]) {
             printf("\nPlease Enter a string: ");
             fgets(buffer, MAX_LINE, stdin);
 
-           file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));
-           strncpy(file_name, buffer, strlen(buffer) - 1);
+            file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));
+            strncpy(file_name, buffer, strlen(buffer) - 1);
 
-           buffer_send = (char *) malloc(sizeof(buffer_send) * strlen(buffer) + 10);
+            buffer_send = (char *) malloc(sizeof(buffer_send) * strlen(buffer) + 10);
 
             /*Format the input string */
             strcpy(buffer_send, "FILE\n");
             strcat(buffer_send, buffer);
-            sprintf(buffer_send, "%d", tcp_port);
+            printf("before port is attached: %s", buffer_send);
+            
+            strcat(buffer_send, tcpPort);
 
-            printf("to be send: %s", buffer_send);
-            printf("to be send len: %d", strlen(buffer_send));
+            /*Debug*/
+            printf("tcp port: %d\n", tcp_port);
+            printf("to be send: %s\n", buffer_send);
+            printf("to be send len: %d\n", strlen(buffer_send));
 
             /* Send message to server. */
             if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
@@ -218,35 +222,35 @@ int main(int argc, char *argv[]) {
             free(buffer);
             free(buffer_send);
         }
-        else if (strncmp(buffer, "q", 1) == 0) {
-            fprintf(stderr, "Now should exit.\n");
-            if (close(socket_tcp) < 0 ) {
-                fprintf(stderr, "ECHOSERV: Error calling close()\n");
-                exit(EXIT_FAILURE);
+            else if (strncmp(buffer, "q", 1) == 0) {
+                fprintf(stderr, "Now should exit.\n");
+                if (close(socket_tcp) < 0 ) {
+                    fprintf(stderr, "ECHOSERV: Error calling close()\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                return EXIT_SUCCESS;
             }
+            else 
+                printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
+        } while (strncmp(buffer, "q", 1) != 0);
 
-            return EXIT_SUCCESS;
+        return EXIT_SUCCESS;
+    }
+
+
+    int ParseCmdLine(int argc, char *argv[], char **szAddress, char **tcpPort, char **udpPort) {
+        /* Number of arguments: <client> <TCP port> <server IP> <server UDP Port> (4 arguments). */
+        if (argc == 4) {
+            *tcpPort = argv[1];
+            *szAddress = argv[2];
+            *udpPort = argv[3];
         }
-        else 
-            printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
-    } while (strncmp(buffer, "q", 1) != 0);
-
-    return EXIT_SUCCESS;
-}
-
-
-int ParseCmdLine(int argc, char *argv[], char **szAddress, char **tcpPort, char **udpPort) {
-    /* Number of arguments: <client> <TCP port> <server IP> <server UDP Port> (4 arguments). */
-    if (argc == 4) {
-        *tcpPort = argv[1];
-        *szAddress = argv[2];
-        *udpPort = argv[3];
+        else {
+            printf("Usage:\n\n");
+            printf("    <client> <TCP port> <server IP> <server UDP Port>\n\n");
+            exit(EXIT_SUCCESS);
+        }
+        return 0;
     }
-    else {
-        printf("Usage:\n\n");
-        printf("    <client> <TCP port> <server IP> <server UDP Port>\n\n");
-        exit(EXIT_SUCCESS);
-    }
-    return 0;
-}
 
