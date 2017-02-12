@@ -179,13 +179,19 @@ int main(int argc, char *argv[]) {
         }
 
         if (strncmp(buffer, "FILE", 4) == 0) {
-            file_name = (char* ) malloc (sizeof(char*) * (strlen(buffer)));
-            tcp_port = (short int *) malloc (sizeof(tcp_port) * 4); /* 4 digits for port number. */
+
+            /*Allocate memory*/
+            file_name = /*(char *) malloc (sizeof(char*) * recvlen);*/
+            /*tcp_port = (s<]hort int *) malloc (sizeof(tcp_port) * 4); [> 4 digits for port number. */
+            endptr = (char *) malloc(sizeof(endptr) * 10);
+
+
             strncpy(endptr, buffer + (strlen(buffer) - 5), 4);
             printf("chusyo tcp_port?: %s", tcp_port);
             
-            free(file_name);
-            free(tcp_port);
+            /*free(file_name);*/
+            /*free(tcp_port);*/
+            free(endptr);
             free(buffer);
         }
         /*[> Find file name and read that file <]*/
