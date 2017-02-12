@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     char     *endptr;                /*  for strtol()              */
     char     *to_capitalize;         /*  store user string to capitalize */
     char     *file_name;             /*  for storing file_name to be searched in the server */
-    char     *temp                   /*  for temporary storage of strings; for formatting */
+    char     *temp;                   /*  for temporary storage of strings; for formatting */
     FILE     *fp;                    /*  file pointer */
 
 
@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
             fp = fopen(file_name, "rb");
             if (fp) {
                
-
+                printf("Do you even go here?");
                 /*Read the file and file size.*/
                 long lSize;
                 void* large_buffer;
@@ -242,6 +242,9 @@ int main(int argc, char *argv[]) {
                 free(endptr);
                 free(buffer);
             }
+        }
+    }
+}
 
             /*[> send the buffer to the client <]*/
             /*if (MAX_LINE < lSize) {*/
@@ -281,5 +284,4 @@ int main(int argc, char *argv[]) {
             /*else {*/
             /*fprintf(stderr, "Connection closed.\n");*/
             /*}*/
-}
-}
+
