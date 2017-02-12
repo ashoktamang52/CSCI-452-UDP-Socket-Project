@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
     int	      socket_udp;
     int       list_s;                /*  listening socket          */
     short int port;                  /*  port number: UDP               */
+    short int tcp_port;              /*  port number: TCP          */
     struct    sockaddr_in servaddr;  /*  socket address structure  */
     struct sockaddr_in remaddr;  /* remote address */
     socklen_t addrlen = sizeof(remaddr); /* length of remote address */
@@ -165,9 +166,10 @@ int main(int argc, char *argv[]) {
             printf("to send: %s\n", to_capitalize);
             printf("to send length: %d\n", strlen(to_capitalize));
             /*[> send the formatted message to the client <]*/
-            /*Add null char at the end*/
             int sentlen = 0;
-            sentlen = sendto(socket_udp, to_capitalize, strlen(to_capitalize), 0, (struct sockaddr *) &remaddr, addrlen);
+
+            /*strlen doesn't return the length including null terminator.*/
+            sentlen = sendto(socket_udp, to_capitalize, strlen(to_capitalize) + 1, 0, (struct sockaddr *) &remaddr, addrlen);
             if (sentlen < 0) {
                 perror("Sending failed.");
             }
@@ -178,7 +180,11 @@ int main(int argc, char *argv[]) {
 
         if (strncmp(buffer, "FILE", 4) == 0) {
             file_name = (char* ) malloc (sizeof(char*) * (strlen(buffer)));
-
+            tcp_port = (short int *) malloc (sizeof(tcp_port) * 4); /* 4 digits for port number. */
+            strncpy(tcp_port, buffer + (strlen(buffer) - 5), 4);
+            printf("chusyo tcp_port?: %s", tcp_port);
+            
+            
         }
         /*[> Find file name and read that file <]*/
         /*fp = fopen(file_name, "rb");*/
