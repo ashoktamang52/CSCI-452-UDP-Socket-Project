@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     int       socket_tcp;                    /*  connection socket                  */
     int	      socket_udp;
     int       list_s;                /*  listening socket          */
-    short int port;                  /*  port number: UDP               */
+    short int udp_port;                  /*  port number: UDP               */
     short int tcp_port;              /*  port number: TCP          */
     struct    sockaddr_in servaddr;  /*  socket address structure  */
     struct sockaddr_in remaddr;  /* remote address */
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     /*  Get port number from the command line.*/
 
     if ( argc == 2 ) {
-        port = strtol(argv[1], &endptr, 0);
+        udp_port = strtol(argv[1], &endptr, 0);
         if ( *endptr ) {
             fprintf(stderr, "ECHOSERV: Invalid port number.\n");
             exit(EXIT_FAILURE);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family      = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port        = htons(port);
+    servaddr.sin_port        = htons(udp_port);
 
 
     /*  Bind our socket addresss to the 
@@ -146,7 +146,10 @@ int main(int argc, char *argv[]) {
             /*Allocate memory*/
             file_name = (char *) malloc (sizeof(char*) * recvlen);
             /*tcp_port = (s<]hort int *) malloc (sizeof(tcp_port) * 4); [> 4 digits for port number. */
-            endptr = (char *) malloc(sizeof(endptr) * 10);
+
+            /*Temp pointer to hold string tcp port.*/
+            char *string_port;
+            string_port = (char *) malloc(sizeof(string_port) * 10);
             
             char *token; /*for parsing the message into file name and port */
             const char delim = '\n';
@@ -160,7 +163,7 @@ int main(int argc, char *argv[]) {
                 if (position == 1)
                     strcpy(file_name, token);
                 if (position == 2)
-                    strcpy(endptr, token);
+                    strcpy(string_port, token);
                 if (position > 2) 
                     break;
                 position++;
@@ -170,7 +173,7 @@ int main(int argc, char *argv[]) {
 
             /*Check if the file exists.*/
             printf("Search file: %s.\n", file_name);
-            printf("TCP port in string: %s\n", endptr);
+            printf("TCP port in string: %s\n", string_port);
 
             /* Find file name and read that file */
             fp = fopen(file_name, "rb");
@@ -224,6 +227,10 @@ int main(int argc, char *argv[]) {
                 /* close the file and later free the large_buffer */
                 fclose(fp);
 
+                /*Set up TCP connection*/
+                free(endptr); /*free memory before using. */
+                tcp_port = strtol(
+
                 /* free memory from local pointers */
                 free(temp);
                 free(buffer_send);
@@ -246,6 +253,15 @@ int main(int argc, char *argv[]) {
 
                /*Free memory from local pointers.*/
                free(buffer_send);
+               tcp_port = strtol(string_port, &endptr, 0);
+               free(string_port);
+
+               if ( *endptr ) {
+                   fprintf(stderr, "ECHOSERV: Invalid port number.\n");
+                   exit(EXIT_FAILURE);
+               }
+
+               printf("tcp_port: %d\n", tcp_port);
 
             }
 
