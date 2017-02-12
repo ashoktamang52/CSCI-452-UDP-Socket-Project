@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
 
             /*Recieve status from server.*/
             int recvlen = 0;
-            buffer_reeived = (char *) malloc(sizeof(buffer_received) * MAX_LINE);
+            buffer_received = (char *) malloc(sizeof(buffer_received) * MAX_LINE);
             recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
             if (recvlen > 0) {
                 buffer_received[recvlen] = '\0';
@@ -231,6 +231,7 @@ int main(int argc, char *argv[]) {
             free(file_name);
             free(buffer);
             free(buffer_send);
+            free(buffer_received);
         }
             else if (strncmp(buffer, "q", 1) == 0) {
                 fprintf(stderr, "Now should exit.\n");

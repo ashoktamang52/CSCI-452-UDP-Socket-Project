@@ -241,7 +241,7 @@ int main(int argc, char *argv[]) {
                 printf("stats ok mesg: %s\n", buffer_send); /*debug*/
 
                 /*Send Status message to client.*/
-                if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
+                if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen)) < 0) {
                     perror("Failed to send status.");
                     exit(EXIT_FAILURE);
                 }
