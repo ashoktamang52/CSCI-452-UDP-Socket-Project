@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
             buffer[recvlen] = '\0';
             printf("received message: \"%s\"\n", buffer);
         }
-
+        printf("buffer len: %d\n.", strlen(buffer));
         /*  Wait for a connection, then accept() it  */
 
         /*         if ( (socket_tcp = accept(list_s, NULL, NULL) ) < 0 ) {*/
@@ -236,8 +236,6 @@ int main(int argc, char *argv[]) {
         /*}*/
 
         /*   [>* free the memory */
-        memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
-        memset(buffer_send, 0, (sizeof buffer_send[0]) * MAX_LINE);
 
         /*  Close the connected socket  */
         /*         if ( close(socket_tcp) < 0 ) {*/

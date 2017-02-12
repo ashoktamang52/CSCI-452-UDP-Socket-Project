@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
             fgets(buffer, MAX_LINE, stdin);
            
             /*CAP + 2 new lines + null terminator = 6*/
-            buffer_send =  (char *) malloc(sizeof(buffer_send) * (strlen(buffer) + 6)); 
+            buffer_send =  (char *) malloc(sizeof(buffer_send) * (strlen(buffer))); 
             printf("size of buffer: %d\n", strlen(buffer));
             /* Format the input string */
             strcpy(buffer_send, "CAP\n");
@@ -160,7 +160,8 @@ int main(int argc, char *argv[]) {
             buffer_received = (char *) malloc(sizeof(buffer_received) * MAX_LINE);
             recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
             if (recvlen > 0) {
-                /*buffer_received[recvlen] = '\0';*/
+                buffer_received[recvlen] = '\0';
+                printf("total bytest received: %d.\n", recvlen);
                 printf("Server responded: %s\n", buffer_received);
             }
 
