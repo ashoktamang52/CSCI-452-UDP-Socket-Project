@@ -28,6 +28,7 @@ Simple TCP/IP echo client.
 /*  Global constants  */
 
 #define MAX_LINE           (1000)
+#define LISTENQ            (1024)  /* Backlog for listen() */
 
 
 /*  Function declarations  */
@@ -230,7 +231,7 @@ int main(int argc, char *argv[]) {
                 /*Create the listening socket  */
 
                 /*Free endptr before using*/
-                free(endptr);
+                /*free(endptr);*/
 
                 tcp_port = strtol(tcpPort, &endptr, 0);
                 if ( *endptr ) {
@@ -248,7 +249,7 @@ int main(int argc, char *argv[]) {
                 /*zero, and fill in the relevant data members   */
 
                 memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
-                servaddr_tcp_udp.sin_family      = AF_INET;
+                servaddr_tcp.sin_family      = AF_INET;
                 servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
                 servaddr_tcp.sin_port        = htons(tcp_port);
 
@@ -275,11 +276,11 @@ int main(int argc, char *argv[]) {
                     }
 
                     /*Experimental*/
-                    free(buffer);
-                    buffer = (char *) malloc(sizeof(buffer) * MAXLINE);
-                    read(socket_tcp, buffer, MAXLINE);
+                    /*free(buffer);*/
+                    /*buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);*/
+                    /*read(socket_tcp, buffer, MAX_LINE);*/
 
-                    printf("Server responded: %s\n", buffer);
+                    /*printf("Server responded: %s\n", buffer);*/
 
                 }
 

@@ -40,7 +40,8 @@ int main(int argc, char *argv[]) {
     int       list_s;                /*  listening socket          */
     short int udp_port;                  /*  port number: UDP               */
     short int tcp_port;              /*  port number: TCP          */
-    struct    sockaddr_in servaddr;  /*  socket address structure  */
+    struct    sockaddr_in servaddr_udp;  /*  socket address structure  */
+    struct    sockaddr_in servaddr_tcp;
     struct sockaddr_in remaddr;  /* remote address */
     socklen_t addrlen = sizeof(remaddr); /* length of remote address */
     char     *buffer;      /*  character buffer          */
@@ -68,7 +69,6 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    /* TCP connection */	
     /*UDP Connection  */
 
     socket_udp = socket(AF_INET, SOCK_DGRAM, 0);
@@ -76,16 +76,16 @@ int main(int argc, char *argv[]) {
     /*  Set all bytes in socket address structure to
         zero, and fill in the relevant data members   */
 
-    memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family      = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port        = htons(udp_port);
+    memset(&servaddr_udp, 0, sizeof(servaddr_udp));
+    servaddr_udp.sin_family      = AF_INET;
+    servaddr_udp.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr_udp.sin_port        = htons(udp_port);
 
 
     /*  Bind our socket addresss to the 
         listening socket, and call listen()  */
 
-    if ( bind(socket_udp, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0 ) {
+    if ( bind(socket_udp, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp)) < 0 ) {
         fprintf(stderr, "ECHOSERV: Error calling bind()\n");
         exit(EXIT_FAILURE);
     }
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 
     while ( 1 ) {
         /*UDP connection*/
-        printf("Waiting on port %d\n", port);
+        printf("Waiting on port %d\n", udp_port);
         int recvlen = 0;
         buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
         recvlen = recvfrom(socket_udp, buffer, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
@@ -170,6 +170,8 @@ int main(int argc, char *argv[]) {
                 token = strtok(NULL, "\n");
             }
 
+            free(token);
+
 
             /*Check if the file exists.*/
             printf("Search file: %s.\n", file_name);
@@ -228,9 +230,41 @@ int main(int argc, char *argv[]) {
                 fclose(fp);
 
                 /*Set up TCP connection*/
-                free(endptr); /*free memory before using. */
-                tcp_port = strtol(
+                /*free(endptr); [>free memory before using. <]*/
+                tcp_port = strtol(string_port, &endptr, 0);
+                /*free(string_port);*/
 
+                if ( *endptr ) {
+                    fprintf(stderr, "ECHOSERV: Invalid port number.\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                printf("tcp_port: %d\n", tcp_port);
+
+                /*  Create the listening socket  */
+
+                if ( (socket_tcp = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+                    fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                /*Set all bytes in socket address structure to*/
+                /*zero, and fill in the relevant data members   */
+
+                memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
+                servaddr_tcp.sin_family      = AF_INET;
+                servaddr_tcp.sin_port        = htons(tcp_port);
+                servaddr_tcp.sin_addr.s_addr = htnol(INADDR_ANY);
+
+                /*  connect() to the remote echo server  */
+                if ( connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp) ) < 0 ) {
+                    perror("Connection failed");
+                    exit(EXIT_FAILURE);
+                }
+                
+                char temp2[10];
+                sprintf(temp2, "hello");
+                write(socket_tcp, temp2, strlen(temp2)); 
                 /* free memory from local pointers */
                 free(temp);
                 free(buffer_send);
@@ -251,24 +285,12 @@ int main(int argc, char *argv[]) {
                    exit(EXIT_FAILURE);
                }
 
-               /*Free memory from local pointers.*/
-               free(buffer_send);
-               tcp_port = strtol(string_port, &endptr, 0);
-               free(string_port);
-
-               if ( *endptr ) {
-                   fprintf(stderr, "ECHOSERV: Invalid port number.\n");
-                   exit(EXIT_FAILURE);
-               }
-
-               printf("tcp_port: %d\n", tcp_port);
 
             }
 
             free(file_name);
             /*free(tcp_port);*/
             free(endptr);
-            free(buffer);
         }
     }
 }
