@@ -1,0 +1,307 @@
+commit d1af7f48ffb7ddbe564a682bf7639aca88d84ad1
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 23:22:52 2017 -0500
+
+    final-1: remove logs
+
+commit 574db3c7cc0da3927f8a0d1b384055809a09a304
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 23:16:22 2017 -0500
+
+    final: file receiving buffer is made to void pointer
+
+commit 8cc9d3b8ccdfd05d1c53556acf3e907b580d85dc
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 23:04:01 2017 -0500
+
+    fix: right length of file size to be recieved
+
+commit 7e30d06c9fa36acd5d994200f9441cca953b70d6
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 22:47:47 2017 -0500
+
+    fix: use counter to enable bind/listen/connect only one time.
+
+commit c5e664279218368e6792cc9a93cc582d15aa902c
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 21:35:46 2017 -0500
+
+    fix: unbinding issue still persists.
+
+commit b958aaba5a3a70e26f7abfbfdcdd69e1e4dc4194
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 21:17:40 2017 -0500
+
+    error: bind error: Address already in use.
+
+commit 8ef7f8e5badf58ffdbed4712e625244dec5596bf
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 20:52:06 2017 -0500
+
+    Use 'setsockopt()' to force unbind socket.
+
+commit bd8dd4d991d7204f5e1742480a96734b84ef62ad
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 20:38:14 2017 -0500
+
+    Implement read/write logic for binary file.
+
+commit df7ecae2c1a38b8af68d821114a62f8a6a3c6531
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 20:13:54 2017 -0500
+
+    Implement 'smooth' closing of tcp connection.
+
+commit 58d6ff37c5b776ea00aeafceff8544a4d43ef7f3
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 19:54:42 2017 -0500
+
+    fix: tcp connection (logic swap issue)
+
+commit 69f04b583a75889f1c6a5e49f5dfc91f6354e1f6
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 19:16:46 2017 -0500
+
+    fix: TCP connection set up.
+
+commit 0a289e84042fbf12180335a96266aeb22f6059f7
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 18:35:42 2017 -0500
+
+    Set up TCP connection in server.
+
+commit fbd09d6192c5e1d9834cf1c7c02ac22c0ba96e29
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 18:26:21 2017 -0500
+
+    Set up tcp connection in client.
+
+commit a1e7645e1f7ac24eac0db786fc91f866b152485d
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 17:48:05 2017 -0500
+
+    fix: format 'not found' message.
+
+commit 66df8bd9a15a70631f45ed2f68279cbc974894eb
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 17:28:21 2017 -0500
+
+    Implement displaying 'filename not found.' message.
+
+commit f68a85fc0031d52c1516b0175d8af6676647371c
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 16:52:29 2017 -0500
+
+    Parse the status of file sent by server.
+
+commit dd908f6abc468bbf5cc574ee2ee3dc47586fa081
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 16:26:50 2017 -0500
+
+    Implement informing inexistence of file to client.
+
+commit 374bd77c09d5cc443479d378c29a7d8e6a48517c
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 16:08:16 2017 -0500
+
+    fix: send to right client address from server.
+
+commit 84a1aa128ba64fb40d21c5f5b1059e222ae92a2f
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 16:03:36 2017 -0500
+
+    Implement communication file exist status between client and server.
+
+commit 02436c5654c4050e50d34931bf935f33600424ba
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 15:54:02 2017 -0500
+
+    Use strtok to parse the message into file name and port.
+
+commit fea91603aa535fd55c10dc36a2555a9f245772a5
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 14:27:55 2017 -0500
+
+    Check if the filename exists in the server.
+
+commit 7e486d1779e44c2a6a487860e1f2203f7eedd71a
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 14:21:26 2017 -0500
+
+    Format status OK message to be sent to client.
+
+commit 5846e7647614add336b0caffe8c7d223efb7f053
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 13:46:57 2017 -0500
+
+    Extract tcp port from the message by client.
+
+commit 72fb8f0c1c6644407a450b11122ed6c17941678d
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 13:39:48 2017 -0500
+
+    fix: add new line to the message containing file name.
+
+commit fcad3bc9ac544366e82e80c53b5f1805db1d5ea6
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 13:24:45 2017 -0500
+
+    Extract tcp port number from the message buffer.
+
+commit 7dcfd4d4c484c54094abdbf1c72fbc248ff8365f
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 13:10:43 2017 -0500
+
+    Implement concatenating tcp port number to message including file name.
+
+commit 0877c9e7ecc49bde85a3537aa53af3c1e39a0c13
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 02:56:46 2017 -0500
+
+    Parse message containing file name.
+
+commit 1a201cac150ac1fc2020d449e24572258bd49de8
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 02:28:45 2017 -0500
+
+    Implement sending file name to server
+
+commit bf3c3984f52403ee2f16314c186b307f7c8df339
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sun Feb 12 00:52:22 2017 -0500
+
+    fix: memory allocation and management for char pointers
+
+commit b3ba6df31f1b519559f76a8a9787e7fee9505f43
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 23:51:37 2017 -0500
+
+    fix: use char pointers for strings in server
+
+commit c75c910a2374d504343b14fbaa6d3e708d95054c
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 23:10:28 2017 -0500
+
+    fix: use dynamic allocation of char array.
+
+commit 71c5a032fe50d36f9a1b3c3892659e4916bcfdd0
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 22:16:27 2017 -0500
+
+    fix: insert zero to indicate the termination of string.
+
+commit f4345b6e2ca09c0de9fe404b59a0710139121ae7
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 21:57:32 2017 -0500
+
+    fix: garbage value in server response
+
+commit 3460c3bf02763c25a2815140342ffcf98e7e7982
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 21:51:50 2017 -0500
+
+    fix: garbage value in server reponse buffer.
+
+commit 533bebcb69d3a6fea9767321681cf2dd9cbe609f
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 20:28:56 2017 -0500
+
+    fix: buffer to hold only string to be capitalized.
+
+commit f2045ad72ba30b5c4c46ef2ee2b417a38a030f69
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 19:45:51 2017 -0500
+
+    fix: buffer to store capitalized string.
+
+commit 46537ff94b3be803137073b22611f1648d1961d6
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 19:30:35 2017 -0500
+
+    Parse message (of captalized string) to be sent by server.
+
+commit 7c4930aa7680d0db8979ddfbdb6a3376c388c0da
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 19:20:44 2017 -0500
+
+    Implement receive capitalized string from server
+
+commit 24a1e38819eb27dcf13120fd3a794424dd6c227b
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 18:13:52 2017 -0500
+
+    Implement reply back to client via UDP.
+
+commit c952ea83c591d5f6e3d9d8b3b0cb715b7b74d25a
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 17:54:38 2017 -0500
+
+    fix: typos
+
+commit b44c24ff7e3f3474ca5629157a9ae8f7a37834cf
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 17:51:36 2017 -0500
+
+    Implement of capitalize string and send back it to client.
+
+commit 2d1f06e1e35624e45bc27ca5ce94a7c053308187
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 16:30:37 2017 -0500
+
+    fix: errors generated by commenting out.
+    
+    Basic UDP connection is successful.
+
+commit 8c6107d210a8e88a702b624498e4f50d96f78766
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 16:19:29 2017 -0500
+
+    test: comment out TCP logics for debugging
+
+commit 48e09fa1c4f375da5e72646d04617c4aca68cfcd
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 16:05:49 2017 -0500
+
+    fix: typos in sendto() and recvfrom() usage.
+
+commit 22a927e38af8c7da388965a80f577a35fb1c3354
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 16:00:53 2017 -0500
+
+    Send message from client to server via UDP.
+
+commit 21d9d8ba2cef746acc4cc1f17dd33b2c5c164ca3
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 15:35:58 2017 -0500
+
+    Connection between client and server.
+
+commit 4b9a7246712b931c79cf23297bc18c7cbfab4f43
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 15:16:55 2017 -0500
+
+    Initialize UDP socket in server.
+
+commit 013d5e75d6bb5422c403d45b6b83b5a94a5fcb58
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 13:41:51 2017 -0500
+
+    Initialize socket for UDP connection in client.
+
+commit 7b8ecb3d1f8446d8a0b0d20b9942145ef52916bb
+Author: Ashok Tamang <ashok.tamang@bison.howard.edu>
+Date:   Sat Feb 11 13:02:36 2017 -0500
+
+    Implement required command line arguments in client.
+
+commit c732af8581e15fb6690f4bb774d166c22fc8f2ae
+Author: ashok <ashok@ashok-VirtualBox.(none)>
+Date:   Tue Feb 7 15:52:08 2017 -0500
+
+    Starter project for project 1: 'TCP Socket Project'
+
+commit a61efafe3bf58b3205ef002c67043b1f21496274
+Author: ashoktamang52 <ashok.tamang@bison.howard.edu>
+Date:   Tue Feb 7 15:48:25 2017 -0500
+
+    Initial commit
