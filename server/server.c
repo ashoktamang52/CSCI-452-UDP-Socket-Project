@@ -134,7 +134,6 @@ int main(int argc, char *argv[]) {
             }
             /*[> free the memory <]*/
             free(to_capitalize);
-            free(buffer);
         }
 
         if (strncmp(buffer, "FILE", 4) == 0) {
@@ -292,5 +291,6 @@ int main(int argc, char *argv[]) {
 
             free(file_name);
         }
+        free(buffer);
     }
 }

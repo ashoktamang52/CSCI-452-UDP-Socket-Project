@@ -238,8 +238,8 @@ int main(int argc, char *argv[]) {
                 }
                 query_count++;
                 /*Experimental*/
-                char *large_buffer;
-                large_buffer = (char *) malloc(sizeof(large_buffer) * MAX_LINE);
+                void *large_buffer;
+                large_buffer = (void *) malloc(sizeof(large_buffer) * MAX_LINE);
                 read(socket_tcp, large_buffer, MAX_LINE);
 
                 printf("Server responded: %s\n", large_buffer);
@@ -250,11 +250,11 @@ int main(int argc, char *argv[]) {
                 int file_size = strtol(fileSize, &endptr, 0);
 
                 fwrite(large_buffer, 1, file_size, fp);
-                printf("Server responded: Data is written to the file named: %s\n", file_name);
 
                 /* close the file and free the memory */
                 fclose(fp);
                 free(large_buffer);
+                free(status_token);
 
        
             }
