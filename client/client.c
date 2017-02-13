@@ -222,6 +222,7 @@ int main(int argc, char *argv[]) {
                 memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
                 servaddr_tcp.sin_family      = AF_INET;
                 servaddr_tcp.sin_port        = htons(tcp_port);
+                
                 /*Set remote ip address*/
                 if (inet_aton(szAddress, &servaddr_tcp.sin_addr) <= 0) {
                     perror("Invalid IP address:");
@@ -234,9 +235,12 @@ int main(int argc, char *argv[]) {
                     exit(EXIT_FAILURE);
                 }
                 
-                char temp2[10];
-                sprintf(temp2, "hello");
-                write(socket_tcp, temp2, strlen(temp2)); 
+                /*Experimental*/
+                free(buffer);
+                buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
+                read(socket_tcp, buffer, MAX_LINE);
+
+                printf("Server responded: %s\n", buffer);
             }
             else {
                 printf("%s not found.\n", temp);

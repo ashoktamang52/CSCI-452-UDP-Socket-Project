@@ -279,13 +279,17 @@ int main(int argc, char *argv[]) {
                         exit(EXIT_FAILURE);
                     }
 
-                    /*Experimental*/
-                    /*free(buffer);*/
-                    /*buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);*/
-                    /*read(socket_tcp, buffer, MAX_LINE);*/
-
-                    /*printf("Server responded: %s\n", buffer);*/
-
+                    char temp2[10];
+                    sprintf(temp2, "hello");
+                    write(socket_tcp, temp2, strlen(temp2)); 
+                    break;
+                }
+                if (close(socket_tcp) < 0) {
+                    perror("Error calling close()\n");
+                    exit(EXIT_FAILURE);
+                }
+                else {
+                    printf("Transfer complete.\n");
                 }
 
                 
@@ -314,7 +318,6 @@ int main(int argc, char *argv[]) {
 
             free(file_name);
             /*free(tcp_port);*/
-            free(endptr);
         }
     }
 }
