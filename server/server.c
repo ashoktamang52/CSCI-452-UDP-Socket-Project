@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
 
 
     /*  Enter an infinite loop to respond to client requests.  */
+    int query_count = 0;
 
     while ( 1 ) {
         /*UDP connection*/
@@ -100,19 +101,15 @@ int main(int argc, char *argv[]) {
         int recvlen = 0;
         buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
         recvlen = recvfrom(socket_udp, buffer, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
-        printf("recieved %d bytes\n", recvlen);
         if (recvlen > 0) {
             buffer[recvlen] = '\0';
-            printf("received message: \"%s\"\n", buffer);
         }
-        printf("buffer len: %d\n.", strlen(buffer));
 
         if (strncmp(buffer, "CAP", 3) == 0) {
             /*number of relevant bytes of message */
             /*= buffer length - 'CAP' length - length of two line breaks - end of string */
             to_capitalize = (char *) malloc(sizeof(to_capitalize) * strlen(buffer));
             strncpy(to_capitalize, buffer + 4, recvlen - 4);
-            printf("what to upper?: %s", to_capitalize);
             /*[> Capitalize the messsage <]*/
             int index = 0;
             while (to_capitalize[index] != '\0') {
@@ -127,8 +124,6 @@ int main(int argc, char *argv[]) {
 
 
             /*[> parse the capitalized message to send to the client <]*/
-            printf("to send: %s\n", to_capitalize);
-            printf("to send length: %d\n", strlen(to_capitalize));
             /*[> send the formatted message to the client <]*/
             int sentlen = 0;
 
@@ -175,14 +170,11 @@ int main(int argc, char *argv[]) {
 
 
             /*Check if the file exists.*/
-            printf("Search file: %s.\n", file_name);
-            printf("TCP port in string: %s\n", string_port);
 
             /* Find file name and read that file */
             fp = fopen(file_name, "rb");
             if (fp) {
 
-                printf("Do you even go here?\n");
                 /*Read the file and file size.*/
                 long lSize;
                 void* large_buffer;
@@ -200,13 +192,10 @@ int main(int argc, char *argv[]) {
                 temp = (char *) malloc(sizeof(temp) * MAX_LINE);
                 buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
 
-                sprintf(temp, "%Ld", lSize);
-                printf("size of file: %Ld\n", lSize);
                 strcpy(buffer_send, "OK\n");
                 strcat(buffer_send, temp);
                 strcat(buffer_send, "\n");
 
-                printf("stats ok mesg: %s\n", buffer_send); /*debug*/
 
                 /*Send Status message to client.*/
                 if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen) < 0) {
@@ -230,78 +219,55 @@ int main(int argc, char *argv[]) {
                 /* close the file and later free the large_buffer */
                 fclose(fp);
 
-                /*Set up TCP connection*/
-                /*Create the listening socket  */
+                if (query_count == 0) {
+                    /*Set up TCP connection*/
+                    /*Create the listening socket  */
 
-                /*Free endptr before using*/
-                /*free(endptr);*/
+                    /*Free endptr before using*/
+                    /*free(endptr);*/
+                    memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for tcp_port */
+                    tcp_port = strtol(string_port, &endptr, 0);
+                    /*free(string_port);*/
+                    if ( *endptr ) {
+                        printf("ECHOCLNT: Invalid port supplied.\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    if ((list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+                        perror("ECHOSERV: Error creating listening socket.\n");
 
-                memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for tcp_port */
-                tcp_port = strtol(string_port, &endptr, 0);
-                /*free(string_port);*/
-                if ( *endptr ) {
-                    printf("ECHOCLNT: Invalid port supplied.\n");
-                    exit(EXIT_FAILURE);
-                }
-                if ((list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
-                    perror("ECHOSERV: Error creating listening socket.\n");
-
-                    exit(EXIT_FAILURE);
-                }
+                        exit(EXIT_FAILURE);
+                    }
 
 
-                /*Set all bytes in socket address structure to*/
-                /*zero, and fill in the relevant data members   */
+                    /*Set all bytes in socket address structure to*/
+                    /*zero, and fill in the relevant data members   */
 
-                memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
-                servaddr_tcp.sin_family      = AF_INET;
-                servaddr_tcp.sin_port        = htons(tcp_port);
-                servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
+                    memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
+                    servaddr_tcp.sin_family      = AF_INET;
+                    servaddr_tcp.sin_port        = htons(tcp_port);
+                    servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
 
-                /*Bind our socket addresss to the */
-                /*listening socket, and call listen()  */
+                    /*Bind our socket addresss to the */
+                    /*listening socket, and call listen()  */
 
-                if ( bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0 ) {
-                    perror("Error calling bind()\n");
-                    exit(EXIT_FAILURE);
-                }
+                    if ( bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0 ) {
+                        perror("Error calling bind()\n");
+                        exit(EXIT_FAILURE);
+                    }
 
-                if ( listen(list_s, LISTENQ) < 0 ) {
-                    perror("ECHOSERV: Error calling listen()\n");
-                    exit(EXIT_FAILURE);
-                }
-
-                while (1) {
-                    /*Wait for a connection, then accept() it  */
-
+                    if ( listen(list_s, LISTENQ) < 0 ) {
+                        perror("ECHOSERV: Error calling listen()\n");
+                        exit(EXIT_FAILURE);
+                    }
                     if ( (socket_tcp = accept(list_s, NULL, NULL) ) < 0 ) {
                         perror("Error in calling accept():");
                         exit(EXIT_FAILURE);
                     }
 
-                    write(socket_tcp, large_buffer, lSize); 
-                    break;
                 }
+                query_count++;
 
-                /*Close socket_tcp.*/
-                if (shutdown(socket_tcp, 2) < 0) {
-                    perror("Error calling shutdown()\n");
-                    exit(EXIT_FAILURE);
-                }
-
-                /*Close list_s.*/
-                if (shutdown(list_s, 2) < 0) {
-                    perror("Error calling shutdown()\n");
-                    exit(EXIT_FAILURE);
-                }
-                else {
-                    printf("Transfer complete.\n");
-                }
-
-                int opt = 1;
-                setsockopt(socket_tcp, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
-                setsockopt(list_s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
-
+                write(socket_tcp, large_buffer, lSize); 
                 
                 /* free memory from local pointers */
                 free(temp);
@@ -313,8 +279,6 @@ int main(int argc, char *argv[]) {
                 buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
                 strcpy(buffer_send, "NOT FOUND\n");
 
-                printf("to send: %s\n", buffer_send);
-                printf("to send len: %d\n", strlen(buffer_send));
 
                 /*Send message to client.*/
 
@@ -327,47 +291,6 @@ int main(int argc, char *argv[]) {
             }
 
             free(file_name);
-            /*free(tcp_port);*/
         }
     }
 }
-
-/*[> send the buffer to the client <]*/
-/*if (MAX_LINE < lSize) {*/
-/*strcpy(buffer_send, "The buffer size is smaller than what needs to be sent.");*/
-/*write(socket_tcp, buffer_send, strlen(buffer_send));*/
-/*}*/
-/*else {*/
-/*sprintf(buffer_send, "%d", lSize);*/
-/*strcat(buffer_send, "\n");*/
-/*strcat(buffer_send, large_buffer);*/
-/*write(socket_tcp, buffer_send, lSize);*/
-/*}*/
-
-/*[> free the memory <]*/
-/*free(large_buffer);*/
-/*free(file_name);*/
-/*} else {*/
-/*[> No such file <]*/
-/*strcpy(buffer, "NOT FOUND");*/
-/*sprintf(buffer_send, "%d", strlen(buffer));*/
-/*strcat(buffer_send, "\n");*/
-/*strcat(buffer_send, buffer);*/
-
-/*[> Inform client that file is not in the server. <]*/
-/*write(socket_tcp, buffer_send, strlen(buffer_send));*/
-/*}*/
-
-/*}*/
-
-/*   [>* free the memory */
-
-/*  Close the connected socket  */
-/*         if ( close(socket_tcp) < 0 ) {*/
-/*perror("ECHOSERV: Error calling close()\n");*/
-/*exit(EXIT_FAILURE);*/
-/*}*/
-/*else {*/
-/*fprintf(stderr, "Connection closed.\n");*/
-/*}*/
-
