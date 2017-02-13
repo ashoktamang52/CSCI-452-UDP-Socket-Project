@@ -241,6 +241,12 @@ int main(int argc, char *argv[]) {
                 read(socket_tcp, buffer, MAX_LINE);
 
                 printf("Server responded: %s\n", buffer);
+                /* write the data to the file. */
+                fp = fopen(file_name, "wb");
+                fwrite(buffer, 1, strlen(buffer), fp);
+                printf("Server responded: Data is written to the file named: %s\n", file_name);
+                /* close the file and free the memory */
+                fclose(fp);
             }
             else {
                 printf("%s not found.\n", temp);
@@ -248,16 +254,6 @@ int main(int argc, char *argv[]) {
 
 
 
-            /*[> write the data to the file. <]*/
-            /*if (strncmp(buffer_received + 2, "NOT FOUND", 9) == 0) {*/
-            /*printf("Server responded: %s\n", buffer_received + 2);*/
-            /*}*/
-            /*else {*/
-            /*fp = fopen(file_name, "wb");*/
-            /*fwrite(buffer_received, 1, strlen(buffer_received), fp);*/
-            /*printf("Server responded: Data is written to the file named: %s\n", file_name);*/
-            /*[> close the file and free the memory <]*/
-            /*fclose(fp);*/
 
             /*Free memory*/
             free(buffer);

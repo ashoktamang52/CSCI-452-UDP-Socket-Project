@@ -279,9 +279,7 @@ int main(int argc, char *argv[]) {
                         exit(EXIT_FAILURE);
                     }
 
-                    char temp2[10];
-                    sprintf(temp2, "hello");
-                    write(socket_tcp, temp2, strlen(temp2)); 
+                    write(socket_tcp, large_buffer, lSize); 
                     break;
                 }
                 if (close(socket_tcp) < 0) {
