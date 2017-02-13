@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
                 /*listening socket, and call listen()  */
 
                 if ( bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0 ) {
-                    fprintf(stderr, "ECHOSERV: Error calling bind()\n");
+                    perror("Error calling bind()\n");
                     exit(EXIT_FAILURE);
                 }
 
@@ -282,6 +282,10 @@ int main(int argc, char *argv[]) {
                     write(socket_tcp, large_buffer, lSize); 
                     break;
                 }
+
+                /*Force unbind socket.*/
+                int true = 1;
+                setsockopt(socket_tcp, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int));
                 if (close(socket_tcp) < 0) {
                     perror("Error calling close()\n");
                     exit(EXIT_FAILURE);
