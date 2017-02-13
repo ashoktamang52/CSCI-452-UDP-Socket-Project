@@ -249,8 +249,8 @@ int main(int argc, char *argv[]) {
                 /* close the file and free the memory */
                 fclose(fp);
                 
-                if (close(socket_tcp) < 0) {
-                    perror("Error calling close()\n");
+                if (shutdown(socket_tcp, 2) < 0) {
+                    perror("Error calling shutdown()\n");
                     exit(EXIT_FAILURE);
                 }
                 int opt = 1;

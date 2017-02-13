@@ -284,14 +284,14 @@ int main(int argc, char *argv[]) {
                 }
 
                 /*Close socket_tcp.*/
-                if (close(socket_tcp) < 0) {
-                    perror("Error calling close()\n");
+                if (shutdown(socket_tcp, 2) < 0) {
+                    perror("Error calling shutdown()\n");
                     exit(EXIT_FAILURE);
                 }
 
                 /*Close list_s.*/
-                if (close(list_s) < 0) {
-                    perror("Error calling close()\n");
+                if (shutdown(list_s, 2) < 0) {
+                    perror("Error calling shutdown()\n");
                     exit(EXIT_FAILURE);
                 }
                 else {
