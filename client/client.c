@@ -217,6 +217,18 @@ int main(int argc, char *argv[]) {
             /*If file does exist.*/
             if (strcmp(status_token, "OK") == 0) {
 
+                char *fileSize;
+                fileSize = (char *) malloc(sizeof(char*) * MAX_LINE);
+   
+               int position = 0;
+               while(status_token != NULL) {
+                   if (position == 1) 
+                       strcpy(fileSize, status_token);
+                   if (position > 1)
+                       break;
+                   position++;
+                   status_token = strtok(NULL, "\n");
+               }
                 if (query_count == 0) {
                     /*  connect() to the remote echo server  */
                     if ( connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp) ) < 0 ) {
@@ -233,7 +245,11 @@ int main(int argc, char *argv[]) {
                 printf("Server responded: %s\n", large_buffer);
                 /* write the data to the file. */
                 fp = fopen(file_name, "wb");
-                fwrite(large_buffer, 1, strlen(large_buffer), fp);
+
+                memset(&endptr, 0, sizeof(endptr));
+                int file_size = strtol(fileSize, &endptr, 0);
+
+                fwrite(large_buffer, 1, file_size, fp);
                 printf("Server responded: Data is written to the file named: %s\n", file_name);
 
                 /* close the file and free the memory */
