@@ -165,7 +165,6 @@ int main(int argc, char *argv[]) {
 
 
             /* reset buffer to get only relevant string */
-            free(buffer);
             free(buffer_received);
             free(buffer_send); 
         }
@@ -242,7 +241,6 @@ int main(int argc, char *argv[]) {
                 large_buffer = (void *) malloc(sizeof(large_buffer) * MAX_LINE);
                 read(socket_tcp, large_buffer, MAX_LINE);
 
-                printf("Server responded: %s\n", large_buffer);
                 /* write the data to the file. */
                 fp = fopen(file_name, "wb");
 
