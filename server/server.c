@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
             /*Temp pointer to hold string tcp port.*/
             char *string_port;
             string_port = (char *) malloc(sizeof(string_port) * 10);
-            
+
             char *token; /*for parsing the message into file name and port */
             const char delim = '\n';
             token = (char *) malloc(sizeof(token) * strlen(buffer)+1);
@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
             /* Find file name and read that file */
             fp = fopen(file_name, "rb");
             if (fp) {
-               
+
                 printf("Do you even go here?\n");
                 /*Read the file and file size.*/
                 long lSize;
@@ -192,14 +192,14 @@ int main(int argc, char *argv[]) {
                 fseek(fp, 0, SEEK_END);
                 lSize = ftell(fp);
                 rewind(fp); /* Put the postion of pointer back to the start of the file */
-                
+
                 /*Inform client that file exists.*/
-                
+
                 /*Format status message.*/
-               
+
                 temp = (char *) malloc(sizeof(temp) * MAX_LINE);
                 buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
-               
+
                 sprintf(temp, "%Ld", lSize);
                 printf("size of file: %Ld\n", lSize);
                 strcpy(buffer_send, "OK\n");
@@ -283,16 +283,24 @@ int main(int argc, char *argv[]) {
                     break;
                 }
 
-                /*Force unbind socket.*/
-                int true = 1;
-                setsockopt(socket_tcp, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int));
+                /*Close socket_tcp.*/
                 if (close(socket_tcp) < 0) {
+                    perror("Error calling close()\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                /*Close list_s.*/
+                if (close(list_s) < 0) {
                     perror("Error calling close()\n");
                     exit(EXIT_FAILURE);
                 }
                 else {
                     printf("Transfer complete.\n");
                 }
+
+                int opt = 1;
+                setsockopt(socket_tcp, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
+                setsockopt(list_s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
 
                 
                 /* free memory from local pointers */
@@ -302,18 +310,18 @@ int main(int argc, char *argv[]) {
             }
             else {
                 /*Inform client that file doesn't exist*/
-               buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
-               strcpy(buffer_send, "NOT FOUND\n");
+                buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
+                strcpy(buffer_send, "NOT FOUND\n");
 
-               printf("to send: %s\n", buffer_send);
-               printf("to send len: %d\n", strlen(buffer_send));
+                printf("to send: %s\n", buffer_send);
+                printf("to send len: %d\n", strlen(buffer_send));
 
-               /*Send message to client.*/
-               
-               if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen) < 0) {
-                   perror("Failed to send no file status.");
-                   exit(EXIT_FAILURE);
-               }
+                /*Send message to client.*/
+
+                if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen) < 0) {
+                    perror("Failed to send no file status.");
+                    exit(EXIT_FAILURE);
+                }
 
 
             }
@@ -324,42 +332,42 @@ int main(int argc, char *argv[]) {
     }
 }
 
-            /*[> send the buffer to the client <]*/
-            /*if (MAX_LINE < lSize) {*/
-            /*strcpy(buffer_send, "The buffer size is smaller than what needs to be sent.");*/
-            /*write(socket_tcp, buffer_send, strlen(buffer_send));*/
-            /*}*/
-            /*else {*/
-            /*sprintf(buffer_send, "%d", lSize);*/
-            /*strcat(buffer_send, "\n");*/
-            /*strcat(buffer_send, large_buffer);*/
-            /*write(socket_tcp, buffer_send, lSize);*/
-            /*}*/
+/*[> send the buffer to the client <]*/
+/*if (MAX_LINE < lSize) {*/
+/*strcpy(buffer_send, "The buffer size is smaller than what needs to be sent.");*/
+/*write(socket_tcp, buffer_send, strlen(buffer_send));*/
+/*}*/
+/*else {*/
+/*sprintf(buffer_send, "%d", lSize);*/
+/*strcat(buffer_send, "\n");*/
+/*strcat(buffer_send, large_buffer);*/
+/*write(socket_tcp, buffer_send, lSize);*/
+/*}*/
 
-            /*[> free the memory <]*/
-            /*free(large_buffer);*/
-            /*free(file_name);*/
-            /*} else {*/
-            /*[> No such file <]*/
-            /*strcpy(buffer, "NOT FOUND");*/
-            /*sprintf(buffer_send, "%d", strlen(buffer));*/
-            /*strcat(buffer_send, "\n");*/
-            /*strcat(buffer_send, buffer);*/
+/*[> free the memory <]*/
+/*free(large_buffer);*/
+/*free(file_name);*/
+/*} else {*/
+/*[> No such file <]*/
+/*strcpy(buffer, "NOT FOUND");*/
+/*sprintf(buffer_send, "%d", strlen(buffer));*/
+/*strcat(buffer_send, "\n");*/
+/*strcat(buffer_send, buffer);*/
 
-            /*[> Inform client that file is not in the server. <]*/
-            /*write(socket_tcp, buffer_send, strlen(buffer_send));*/
-            /*}*/
+/*[> Inform client that file is not in the server. <]*/
+/*write(socket_tcp, buffer_send, strlen(buffer_send));*/
+/*}*/
 
-            /*}*/
+/*}*/
 
-            /*   [>* free the memory */
+/*   [>* free the memory */
 
-            /*  Close the connected socket  */
-            /*         if ( close(socket_tcp) < 0 ) {*/
-            /*perror("ECHOSERV: Error calling close()\n");*/
-            /*exit(EXIT_FAILURE);*/
-            /*}*/
-            /*else {*/
-            /*fprintf(stderr, "Connection closed.\n");*/
-            /*}*/
+/*  Close the connected socket  */
+/*         if ( close(socket_tcp) < 0 ) {*/
+/*perror("ECHOSERV: Error calling close()\n");*/
+/*exit(EXIT_FAILURE);*/
+/*}*/
+/*else {*/
+/*fprintf(stderr, "Connection closed.\n");*/
+/*}*/
 

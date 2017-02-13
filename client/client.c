@@ -245,8 +245,16 @@ int main(int argc, char *argv[]) {
                 fp = fopen(file_name, "wb");
                 fwrite(buffer, 1, strlen(buffer), fp);
                 printf("Server responded: Data is written to the file named: %s\n", file_name);
+
                 /* close the file and free the memory */
                 fclose(fp);
+                
+                if (close(socket_tcp) < 0) {
+                    perror("Error calling close()\n");
+                    exit(EXIT_FAILURE);
+                }
+                int opt = 1;
+                setsockopt(socket_tcp, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int));
             }
             else {
                 printf("%s not found.\n", temp);
