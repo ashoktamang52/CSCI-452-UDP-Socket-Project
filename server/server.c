@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
     /*  Get port number from the command line.*/
 
     if ( argc == 2 ) {
+        memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for udp_port */
         udp_port = strtol(argv[1], &endptr, 0);
         if ( *endptr ) {
             fprintf(stderr, "ECHOSERV: Invalid port number.\n");
@@ -230,23 +231,24 @@ int main(int argc, char *argv[]) {
                 fclose(fp);
 
                 /*Set up TCP connection*/
-                /*free(endptr); [>free memory before using. <]*/
+                /*Create the listening socket  */
+
+                /*Free endptr before using*/
+                /*free(endptr);*/
+
+                memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for tcp_port */
                 tcp_port = strtol(string_port, &endptr, 0);
                 /*free(string_port);*/
-
                 if ( *endptr ) {
-                    fprintf(stderr, "ECHOSERV: Invalid port number.\n");
+                    printf("ECHOCLNT: Invalid port supplied.\n");
+                    exit(EXIT_FAILURE);
+                }
+                if ((list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+                    perror("ECHOSERV: Error creating listening socket.\n");
+
                     exit(EXIT_FAILURE);
                 }
 
-                printf("tcp_port: %d\n", tcp_port);
-
-                /*  Create the listening socket  */
-
-                if ( (socket_tcp = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
-                    fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
-                    exit(EXIT_FAILURE);
-                }
 
                 /*Set all bytes in socket address structure to*/
                 /*zero, and fill in the relevant data members   */
@@ -254,17 +256,39 @@ int main(int argc, char *argv[]) {
                 memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
                 servaddr_tcp.sin_family      = AF_INET;
                 servaddr_tcp.sin_port        = htons(tcp_port);
-                servaddr_tcp.sin_addr.s_addr = htnol(INADDR_ANY);
+                servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
 
-                /*  connect() to the remote echo server  */
-                if ( connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp) ) < 0 ) {
-                    perror("Connection failed");
+                /*Bind our socket addresss to the */
+                /*listening socket, and call listen()  */
+
+                if ( bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0 ) {
+                    fprintf(stderr, "ECHOSERV: Error calling bind()\n");
                     exit(EXIT_FAILURE);
                 }
+
+                if ( listen(list_s, LISTENQ) < 0 ) {
+                    perror("ECHOSERV: Error calling listen()\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                while (1) {
+                    /*Wait for a connection, then accept() it  */
+
+                    if ( (socket_tcp = accept(list_s, NULL, NULL) ) < 0 ) {
+                        perror("Error in calling accept():");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    /*Experimental*/
+                    /*free(buffer);*/
+                    /*buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);*/
+                    /*read(socket_tcp, buffer, MAX_LINE);*/
+
+                    /*printf("Server responded: %s\n", buffer);*/
+
+                }
+
                 
-                char temp2[10];
-                sprintf(temp2, "hello");
-                write(socket_tcp, temp2, strlen(temp2)); 
                 /* free memory from local pointers */
                 free(temp);
                 free(buffer_send);
