@@ -132,8 +132,9 @@ int main(int argc, char *argv[]) {
         buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
         printf("Insert your command: ");
         fgets(buffer, MAX_LINE, stdin);
-
-        if (strncmp(buffer, "s", 1) == 0) {
+        
+        /* The length of the command should be 2 to account for null character. */
+        if (strncmp(buffer, "s", 1) == 0 && strlen(buffer) == 2) {
             /*Reset buffer to get the string.*/
             free(buffer);
             buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
@@ -168,7 +169,7 @@ int main(int argc, char *argv[]) {
             free(buffer_received);
             free(buffer_send); 
         }
-        else if (strncmp(buffer, "t", 1) == 0) {
+        else if (strncmp(buffer, "t", 1) == 0 && strlen(buffer) == 2) {
             /*Reset buffer to get the string.*/
             free(buffer);
             buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
@@ -267,7 +268,7 @@ int main(int argc, char *argv[]) {
             free(file_name);
             free(temp);
         }
-        else if (strncmp(buffer, "q", 1) == 0) {
+        else if (strncmp(buffer, "q", 1) == 0 && strlen(buffer) == 2) {
             fprintf(stderr, "Now should exit.\n");
             if (close(socket_tcp) < 0 ) {
                 fprintf(stderr, "ECHOSERV: Error calling close()\n");
@@ -278,7 +279,7 @@ int main(int argc, char *argv[]) {
         }
         else 
             printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
-    } while (strncmp(buffer, "q", 1) != 0);
+    } while (strncmp(buffer, "q", 1) != 0 && strlen(buffer) != 2); /* Todo. */
 
     return EXIT_SUCCESS;
 }
