@@ -40,25 +40,25 @@ int ParseCmdLine(int argc, char *argv[], char **szAddress, char **tcpPort, char 
 
 int main(int argc, char *argv[]) {
 
-    int       socket_tcp;                    /*  connection socket                  */
+    int       socket_tcp;                   /*  connection socket                   */
     int	      socket_udp;
-    int       list_s;                     /* listening tcp socket */
-    short int tcp_port;                   /*  tcp port number                        */
-    short int udp_port;                   /*  udp port number                    */
-    struct    sockaddr_in servaddr_udp;       /*  socket address structure           */
-    struct    sockaddr_in servaddr_tcp;   /* tcp socket address structre */
-    struct    sockaddr_in remaddr;        /*  remote address               	     */
-    socklen_t addrlen = sizeof(remaddr);  /*  length of remote address 	     */
-    char     *buffer;           /*  character buffer                   */
-    char     *buffer_send;      /*  Holds message to be send to server */
-    char     *buffer_received;  /*  Holds message send by server       */
-    char     *szAddress;                  /*  Holds remote IP address            */
-    char     *udpPort;			 /* Holds server upd port */
-    char     *tcpPort;                     /*  Holds server tcp port                  */
-    char     *endptr;                     /*  for strtol()                       */
-    FILE     *fp;                         /*  file pointer                       */
-    char     *file_name;                  /*  for creating and writing data into */
-    char     *temp;                       /*  temp storage, for formatting/printing */
+    int       list_s;                       /* listening tcp socket                 */
+    short int tcp_port;                     /*  tcp port number                     */
+    short int udp_port;                     /*  udp port number                     */
+    struct    sockaddr_in servaddr_udp;     /*  socket address structure            */
+    struct    sockaddr_in servaddr_tcp;     /* tcp socket address structre          */
+    struct    sockaddr_in remaddr;          /*  remote address               	    */
+    socklen_t addrlen = sizeof(remaddr);    /*  length of remote address            */
+    char     *buffer;                       /*  character buffer                    */
+    char     *buffer_send;                  /*  Holds message to be send to server  */
+    char     *buffer_received;              /*  Holds message send by server        */
+    char     *szAddress;                    /*  Holds remote IP address             */
+    char     *udpPort;                      /* Holds server upd port                */
+    char     *tcpPort;                      /*  Holds server tcp port               */
+    char     *endptr;                       /*  for strtol()                        */
+    FILE     *fp;                           /*  file pointer                        */
+    char     *file_name;                    /*  for creating and writing data into  */
+    char     *temp;                         /*  temp storage/formatting/printing    */
 
 
     /*  Get command line arguments  */
