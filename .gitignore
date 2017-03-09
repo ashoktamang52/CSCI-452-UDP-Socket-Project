@@ -1,0 +1,7 @@
+client/client
+client/client.o
+client/helper.o
+
+server/server
+server/server.o
+server/helper.o
