@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
             if (fp) {
 
                 /*Read the file and file size.*/
-                long lSize;
+                int lSize;
                 void* large_buffer;
                 size_t result;
 
@@ -184,7 +184,6 @@ int main(int argc, char *argv[]) {
                 rewind(fp); /* Put the postion of pointer back to the start of the file */
 
                 /*Inform client that file exists.*/
-
                 /*Format status message.*/
 
                 temp = (char *) malloc(sizeof(temp) * MAX_LINE);
@@ -201,8 +200,29 @@ int main(int argc, char *argv[]) {
                     perror("Failed to send status.");
                     exit(EXIT_FAILURE);
                 }
-
-
+                
+                
+                /*Set up TCP connection*/
+                memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for tcp_port */
+                tcp_port = strtol(string_port, &endptr, 0);
+                if (*endptr) {
+                    printf("ECHOCLNT: Invalid port supplied.\n");
+                    exit(EXIT_FAILURE);
+                }
+                
+                /* Create TCP socket. */
+                if ((socket_tcp = socket(AF_INET,SOCK_STREAM,0)) < 0) {
+                    perror("Error creating TCP socket");
+                }
+                
+                /*Set all bytes in socket address structure to*/
+                /*zero, and fill in the relevant data members   */
+                
+                memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
+                servaddr_tcp.sin_family      = AF_INET;
+                servaddr_tcp.sin_port        = htons(tcp_port);
+                servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
+                
                 /* allocate memory to hold the whole file */
                 large_buffer = (void* ) malloc(sizeof(void*) * lSize);
                 if (large_buffer == NULL) {
@@ -217,35 +237,22 @@ int main(int argc, char *argv[]) {
 
                 /* close the file and later free the large_buffer */
                 fclose(fp);
-
-                    /*Set up TCP connection*/
-                    /*Create the listening socket  */
-
-                    /*Free endptr before using*/
-                    memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for tcp_port */
-                    tcp_port = strtol(string_port, &endptr, 0);
-                    /*free(string_port);*/
-                    if ( *endptr ) {
-                        printf("ECHOCLNT: Invalid port supplied.\n");
-                        exit(EXIT_FAILURE);
-                    }
-                
-                if ((socket_tcp = socket(AF_INET,SOCK_STREAM,0)) < 0) {
-                    perror("Error creating TCP socket");
-                }
-
-                    /*Set all bytes in socket address structure to*/
-                    /*zero, and fill in the relevant data members   */
-
-                    memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
-                    servaddr_tcp.sin_family      = AF_INET;
-                    servaddr_tcp.sin_port        = htons(tcp_port);
             
-                /*sleep(5);*/
-                
+                sleep(1); /* Referenced from Samman Bikram Thapa. */
                 
                 if (connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0) {
                     perror("Error connecting");
+                }
+                
+                int offset = 0;
+                while (offset < lSize) {
+                    int sendlen;
+                    if ((sendlen = write(socket_tcp, large_buffer + offset, lSize - offset)) < 0) {
+                        perror("Error writing to Client");
+                        exit(0);
+                    }
+                    printf("send length: %d", sendlen);
+                    offset += sendlen;
                 }
 
                 write(socket_tcp, large_buffer, lSize); 

@@ -241,18 +241,28 @@ int main(int argc, char *argv[]) {
                         perror("Error connecting TCP server:");
                     }
                     
+                    memset(&endptr, 0, sizeof(endptr));
+                    int file_size = strtol(fileSize, &endptr, 0);
+                    
                     /* Get file from the server. */
                     void *large_buffer;
-                    large_buffer = (void *) malloc(sizeof(large_buffer) * MAX_LINE);
-                    read(socket_tcp, large_buffer, MAX_LINE);
+                    large_buffer = (void *) malloc(sizeof(large_buffer) * file_size);
+                    read(socket_tcp, large_buffer, file_size);
                     
                     /* write the data to the file. */
                     fp = fopen(file_name, "wb");
                     
-                    memset(&endptr, 0, sizeof(endptr));
-                    int file_size = strtol(fileSize, &endptr, 0);
                     
-                    fwrite(large_buffer, 1, file_size, fp);
+                    
+                    printf("file_size: %d", file_size);
+                    
+                    int writelen;
+                    if ((writelen = fwrite(large_buffer, 1, file_size, fp)) < 0) {
+                        perror("Error writing");
+                        exit(0);
+                    }
+                    
+                    printf("Written len: %d", writelen);
                     
                     /* close the file and free the memory */
                     fclose(fp);
