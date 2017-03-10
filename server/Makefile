@@ -1,14 +1,11 @@
-server: server.o helper.o
-	gcc -o server server.o helper.o -Wall
+server: server.o 
+	gcc -o server server.o -Wall
 
-server.o: server.c helper.h
+server.o: server.c
 	gcc -o server.o server.c -c -ansi -pedantic -Wall
 
-helper.o: helper.c helper.h
-	gcc -o helper.o helper.c -c -ansi -pedantic -Wall
-
 clean:
-	rm helper.o server.o server
+	rm server.o server
 
 
 
