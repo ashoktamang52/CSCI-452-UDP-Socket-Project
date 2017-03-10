@@ -59,6 +59,9 @@ int main(int argc, char *argv[]) {
     FILE     *fp;                           /*  file pointer                        */
     char     *file_name;                    /*  for creating and writing data into  */
     char     *temp;                         /*  temp storage/formatting/printing    */
+    
+    int       sendstatus;
+    int       recvlen;
 
 
     /*  Get command line arguments  */
@@ -128,7 +131,7 @@ int main(int argc, char *argv[]) {
 
     /*  Get string to follow user commands */
     int query_count = 0;
-    do {
+    while (1) {
         buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
         printf("Insert your command: ");
         fgets(buffer, MAX_LINE, stdin);
@@ -138,97 +141,102 @@ int main(int argc, char *argv[]) {
             /*Reset buffer to get the string.*/
             free(buffer);
             buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
-
+            
             printf("\nPlease Enter a string: ");
-            fgets(buffer, MAX_LINE, stdin);
-
-            /*CAP + 2 new lines + null terminator = 6*/
-            buffer_send =  (char *) malloc(sizeof(buffer_send) * (strlen(buffer))); 
+            fgets(buffer, MAX_LINE, stdin); /* fgets also reads new line character. */
+            
+            /* Allocate a new buffer to send message to server. */
+            buffer_send =  (char *) malloc(sizeof(buffer_send) * (strlen(buffer)));
+            
             /* Format the input string */
             strcpy(buffer_send, "CAP\n");
             strcat(buffer_send, buffer);
-
+            
             /*Send message to server via UDP*/
-            if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp)) < 0) {
+            sendstatus = 0;
+            sendstatus = sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof (servaddr_udp));
+            if (sendstatus < 0) {
                 perror("Send to, failed.");
                 exit(EXIT_FAILURE);
             }
-
+            
             /*Read message back from server via UDP*/
-            int recvlen = 0;
+            recvlen = 0;
             buffer_received = (char *) malloc(sizeof(buffer_received) * MAX_LINE);
             recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
             if (recvlen > 0) {
                 buffer_received[recvlen] = '\0';
             }
-
+            
             printf("Server responded: %s\n", buffer_received);
-
-
+            
+            
             /* reset buffer to get only relevant string */
             free(buffer_received);
-            free(buffer_send); 
+            free(buffer_send);
         }
         else if (strncmp(buffer, "t", 1) == 0 && strlen(buffer) == 2) {
             /*Reset buffer to get the string.*/
             free(buffer);
             buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
-
+            
             printf("\nPlease Enter a string: ");
             fgets(buffer, MAX_LINE, stdin);
-
+            
             file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));
             strncpy(file_name, buffer, strlen(buffer) - 1);
-
+            
             buffer_send = (char *) malloc(sizeof(buffer_send) * strlen(buffer) + 10);
-
+            
             /*Format the input string */
             strcpy(buffer_send, "FILE\n");
             strcat(buffer_send, buffer);
-
+            
             strcat(buffer_send, tcpPort);
             strcat(buffer_send, "\n");
-
-
+            
+            
             /* Send message to server. */
-            if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp)) < 0) {
+            sendstatus = 0;
+            sendstatus = socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp))
+            if (sendstatus < 0) {
                 perror("Send to, failed.");
                 exit(EXIT_FAILURE);
             }
-
+            
             /*Recieve status from server.*/
-            int recvlen = 0;
+            recvlen = 0;
             buffer_received = (char *) malloc(sizeof(buffer_received) * MAX_LINE);
             recvlen = recvfrom(socket_udp, buffer_received, MAX_LINE, 0, (struct sockaddr *) &remaddr, &addrlen);
             if (recvlen > 0) {
                 buffer_received[recvlen] = '\0';
             }
-
-
+            
+            
             /*Check status of file from server.*/
             char *status_token = (char *) malloc(sizeof(status_token) * MAX_LINE);
             strcpy(status_token, buffer_received);
             status_token = strtok(status_token, "\n");
-
+            
             /*Holds file name without new line character.*/
             temp = (char *) malloc(sizeof(temp) * MAX_LINE);
             strncpy(temp, buffer, strlen(buffer) - 1);
-
+            
             /*If file does exist.*/
             if (strcmp(status_token, "OK") == 0) {
-
+                
                 char *fileSize;
                 fileSize = (char *) malloc(sizeof(char*) * MAX_LINE);
-   
-               int position = 0;
-               while(status_token != NULL) {
-                   if (position == 1) 
-                       strcpy(fileSize, status_token);
-                   if (position > 1)
-                       break;
-                   position++;
-                   status_token = strtok(NULL, "\n");
-               }
+                
+                int position = 0;
+                while(status_token != NULL) {
+                    if (position == 1)
+                        strcpy(fileSize, status_token);
+                    if (position > 1)
+                        break;
+                    position++;
+                    status_token = strtok(NULL, "\n");
+                }
                 if (query_count == 0) {
                     /*  connect() to the remote echo server  */
                     if ( connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp) ) < 0 ) {
@@ -241,26 +249,26 @@ int main(int argc, char *argv[]) {
                 void *large_buffer;
                 large_buffer = (void *) malloc(sizeof(large_buffer) * MAX_LINE);
                 read(socket_tcp, large_buffer, MAX_LINE);
-
+                
                 /* write the data to the file. */
                 fp = fopen(file_name, "wb");
-
+                
                 memset(&endptr, 0, sizeof(endptr));
                 int file_size = strtol(fileSize, &endptr, 0);
-
+                
                 fwrite(large_buffer, 1, file_size, fp);
-
+                
                 /* close the file and free the memory */
                 fclose(fp);
                 free(large_buffer);
                 free(status_token);
-
-       
+                free(fileSize); 
+                
             }
             else {
                 printf("%s not found.\n", temp);
             }
-
+            
             /*Free memory*/
             free(buffer);
             free(buffer_received);
@@ -274,14 +282,13 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "ECHOSERV: Error calling close()\n");
                 exit(EXIT_FAILURE);
             }
-
+            
             return EXIT_SUCCESS;
         }
         else 
             printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
-    } while (strncmp(buffer, "q", 1) != 0 && strlen(buffer) != 2); /* Todo. */
+    }
 
-    return EXIT_SUCCESS;
 }
 
 

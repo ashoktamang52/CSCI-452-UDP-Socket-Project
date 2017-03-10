@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     short int tcp_port;                     /*  port number: TCP                                    */
     struct    sockaddr_in servaddr_udp;     /*  socket address structure                            */
     struct    sockaddr_in servaddr_tcp;
-    struct sockaddr_in remaddr;             /* remote address */
+    struct  sockaddr_in remaddr;             /* remote address */
     socklen_t addrlen = sizeof(remaddr);    /* length of remote address                             */
     char     *buffer;                       /*  character buffer                                    */
     char     *buffer_send;
@@ -54,7 +54,6 @@ int main(int argc, char *argv[]) {
 
 
     /*  Get port number from the command line.*/
-
     if ( argc == 2 ) {
         memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for udp_port */
         udp_port = strtol(argv[1], &endptr, 0);

@@ -1,7 +1,10 @@
 client/client
 client/client.o
 client/helper.o
+client/summary.txt
 
 server/server
 server/server.o
 server/helper.o
+server/summary.txt
+server/details.txt
