@@ -37,7 +37,6 @@ Simple TCP/IP echo server.
 int main(int argc, char *argv[]) {
     int       socket_tcp;                   /*  connection socket                                   */
     int	      socket_udp;
-    int       list_s;                       /*  listening socket                                    */
     short int udp_port;                     /*  port number: UDP                                    */
     short int tcp_port;                     /*  port number: TCP                                    */
     struct    sockaddr_in servaddr_udp;     /*  socket address structure                            */
@@ -148,7 +147,6 @@ int main(int argc, char *argv[]) {
             string_port = (char *) malloc(sizeof(string_port) * 10);
 
             char *token; /*for parsing the message into file name and port */
-            const char delim = '\n';
             token = (char *) malloc(sizeof(token) * strlen(buffer)+1);
             strcpy(token, buffer);
             token = strtok(token, "\n"); 
@@ -170,7 +168,7 @@ int main(int argc, char *argv[]) {
 
 
             /*Check if the file exists.*/
-
+            
             /* Find file name and read that file */
             fp = fopen(file_name, "rb");
             if (fp) {
@@ -190,13 +188,14 @@ int main(int argc, char *argv[]) {
                 /*Format status message.*/
 
                 temp = (char *) malloc(sizeof(temp) * MAX_LINE);
+                sprintf(temp, "%ld", lSize);
                 buffer_send = (char *) malloc(sizeof(buffer_send) * MAX_LINE);
 
                 strcpy(buffer_send, "OK\n");
                 strcat(buffer_send, temp);
                 strcat(buffer_send, "\n");
 
-
+                printf("to send: %s", buffer_send);
                 /*Send Status message to client.*/
                 if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen) < 0) {
                     perror("Failed to send status.");
@@ -219,12 +218,10 @@ int main(int argc, char *argv[]) {
                 /* close the file and later free the large_buffer */
                 fclose(fp);
 
-                if (query_count == 0) {
                     /*Set up TCP connection*/
                     /*Create the listening socket  */
 
                     /*Free endptr before using*/
-                    /*free(endptr);*/
                     memset(&endptr, 0, sizeof(endptr)); /* Reset endptr for tcp_port */
                     tcp_port = strtol(string_port, &endptr, 0);
                     /*free(string_port);*/
@@ -232,12 +229,10 @@ int main(int argc, char *argv[]) {
                         printf("ECHOCLNT: Invalid port supplied.\n");
                         exit(EXIT_FAILURE);
                     }
-                    if ((list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
-                        perror("ECHOSERV: Error creating listening socket.\n");
-
-                        exit(EXIT_FAILURE);
-                    }
-
+                
+                if ((socket_tcp = socket(AF_INET,SOCK_STREAM,0)) < 0) {
+                    perror("Error creating TCP socket");
+                }
 
                     /*Set all bytes in socket address structure to*/
                     /*zero, and fill in the relevant data members   */
@@ -245,31 +240,21 @@ int main(int argc, char *argv[]) {
                     memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
                     servaddr_tcp.sin_family      = AF_INET;
                     servaddr_tcp.sin_port        = htons(tcp_port);
-                    servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
-
-                    /*Bind our socket addresss to the */
-                    /*listening socket, and call listen()  */
-
-                    if ( bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0 ) {
-                        perror("Error calling bind()\n");
-                        exit(EXIT_FAILURE);
-                    }
-
-                    if ( listen(list_s, LISTENQ) < 0 ) {
-                        perror("ECHOSERV: Error calling listen()\n");
-                        exit(EXIT_FAILURE);
-                    }
-                    if ( (socket_tcp = accept(list_s, NULL, NULL) ) < 0 ) {
-                        perror("Error in calling accept():");
-                        exit(EXIT_FAILURE);
-                    }
-
+            
+                /*sleep(5);*/
+                
+                
+                if (connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0) {
+                    perror("Error connecting");
                 }
-                query_count++;
 
                 write(socket_tcp, large_buffer, lSize); 
                 
                 /* free memory from local pointers */
+                
+                if (close(socket_tcp) < 0) {
+                    perror("Error closing TCP connection");
+                }
                 free(temp);
                 free(buffer_send);
                 free(large_buffer);

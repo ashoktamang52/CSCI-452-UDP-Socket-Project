@@ -68,35 +68,6 @@ int main(int argc, char *argv[]) {
 
     ParseCmdLine(argc, argv, &szAddress, &tcpPort, &udpPort);
 
-
-    /* TCP connection */
-
-    /*Set up TCP connection*/
-
-    tcp_port = strtol(tcpPort, &endptr, 0);
-    if ( *endptr ) {
-        fprintf(stderr, "ECHOSERV: Invalid port number.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    /*  Create the listening socket  */
-
-    if ( (list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
-        fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    /*Set all bytes in socket address structure to*/
-    /*zero, and fill in the relevant data members   */
-
-    memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
-    servaddr_tcp.sin_family      = AF_INET;
-    servaddr_tcp.sin_port        = htons(tcp_port);
-    servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
-    
-    /* Remaining req for TCP connection. */
-    /* bind, listen, accept. */
-    
     /* UDP connection */
 
     /*  Set the remote port  */
@@ -217,7 +188,7 @@ int main(int argc, char *argv[]) {
             
             /*If file does exist.*/
             if (strcmp(status_token, "OK") == 0) {
-                
+                printf("File exists");
                 /* Get the size of the file to be transferred. */
                 char *fileSize;
                 fileSize = (char *) malloc(sizeof(char*) * MAX_LINE);
@@ -232,14 +203,37 @@ int main(int argc, char *argv[]) {
                     status_token = strtok(NULL, "\n");
                 }
                 
-                /* Remaining TCP connection req. */
-                /* bind, listen, accept. */
+                /*Set up TCP connection*/
+                
+                tcp_port = strtol(tcpPort, &endptr, 0);
+                if ( *endptr ) {
+                    fprintf(stderr, "ECHOSERV: Invalid port number.\n");
+                    exit(EXIT_FAILURE);
+                }
+                
+                /*  Create the listening socket  */
+                
+                if ((list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+                    fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
+                    exit(EXIT_FAILURE);
+                }
+                
+                /*Set all bytes in socket address structure to*/
+                /*zero, and fill in the relevant data members   */
+                
+                memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
+                servaddr_tcp.sin_family      = AF_INET;
+                servaddr_tcp.sin_port        = htons(tcp_port);
+                servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
+                
                 if (bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0) {
                     perror("Error binding listening socket:");
+                    exit(0);
                 }
                 
                 if (listen(list_s, LISTENQ) < 0) {
                     perror("Error listening to socket");
+                    exit(0);
                 }
                 
                 while (1) {
@@ -263,8 +257,6 @@ int main(int argc, char *argv[]) {
                     /* close the file and free the memory */
                     fclose(fp);
                     free(large_buffer);
-                    free(status_token);
-                    free(fileSize);
                     
                     if (close(socket_tcp) < 0) {
                         perror("Error closing tcp connection");
@@ -276,22 +268,16 @@ int main(int argc, char *argv[]) {
                 if (close(list_s) < 0) {
                     perror("Error closing listening socket");
                 }
+                free(status_token);
+                free(fileSize);
+
                 
-                /*if (query_count == 0) {
-                    /*  connect() to the remote echo server  */
-                    /*if ( connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp) ) < 0 ) {
-                        perror("Connection failed");
-                        exit(EXIT_FAILURE);
-                    }
-                }
-                query_count++; */
             }
             else {
                 printf("%s not found.\n", temp);
             }
             
             /*Free memory*/
-            free(buffer);
             free(buffer_received);
             free(buffer_send);
             free(file_name);
