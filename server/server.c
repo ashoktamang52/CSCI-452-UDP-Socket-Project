@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     short int tcp_port;                     /*  port number: TCP                                    */
     struct    sockaddr_in servaddr_udp;     /*  socket address structure                            */
     struct    sockaddr_in servaddr_tcp;
-    struct  sockaddr_in remaddr;             /* remote address */
+    struct    sockaddr_in remaddr;             /* remote address */
     socklen_t addrlen = sizeof(remaddr);    /* length of remote address                             */
     char     *buffer;                       /*  character buffer                                    */
     char     *buffer_send;
@@ -131,11 +131,13 @@ int main(int argc, char *argv[]) {
             if (sentlen < 0) {
                 perror("Sending failed.");
             }
-            /*[> free the memory <]*/
+            /* free the memory */
             free(to_capitalize);
         }
 
         if (strncmp(buffer, "FILE", 4) == 0) {
+            
+            printf("Searching file...\n");
 
             /*Allocate memory*/
             file_name = (char *) malloc (sizeof(char*) * recvlen);

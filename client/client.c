@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     short int tcp_port;                     /*  tcp port number                     */
     short int udp_port;                     /*  udp port number                     */
     struct    sockaddr_in servaddr_udp;     /*  socket address structure            */
-    struct    sockaddr_in servaddr_tcp;     /* tcp socket address structre          */
+    struct    sockaddr_in servaddr_tcp;     /*  tcp socket address structre         */
     struct    sockaddr_in remaddr;          /*  remote address               	    */
     socklen_t addrlen = sizeof(remaddr);    /*  length of remote address            */
     char     *buffer;                       /*  character buffer                    */
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 
     /*  Create the listening socket  */
 
-    if ( (socket_tcp = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+    if ( (list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
         fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
         exit(EXIT_FAILURE);
     }
@@ -92,18 +92,11 @@ int main(int argc, char *argv[]) {
     memset(&servaddr_tcp, 0, sizeof(servaddr_tcp));
     servaddr_tcp.sin_family      = AF_INET;
     servaddr_tcp.sin_port        = htons(tcp_port);
-
-    /*Set remote ip address*/
-    if (inet_aton(szAddress, &servaddr_tcp.sin_addr) <= 0) {
-        perror("Invalid IP address:");
-        exit(EXIT_FAILURE);
-    }
-
-    /*  Set the remote port  */
-
-
-
-
+    servaddr_tcp.sin_addr.s_addr = htonl(INADDR_ANY);
+    
+    /* Remaining req for TCP connection. */
+    /* bind, listen, accept. */
+    
     /* UDP connection */
 
     /*  Set the remote port  */
@@ -180,7 +173,7 @@ int main(int argc, char *argv[]) {
             free(buffer);
             buffer = (char *) malloc(sizeof(buffer) * MAX_LINE);
             
-            printf("\nPlease Enter a string: ");
+            printf("\nPlease Enter a filename to search: ");
             fgets(buffer, MAX_LINE, stdin);
             
             file_name = (char*) malloc (sizeof(char*) * (strlen(buffer) - 1));
@@ -198,8 +191,8 @@ int main(int argc, char *argv[]) {
             
             /* Send message to server. */
             sendstatus = 0;
-            sendstatus = socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp))
-            if (sendstatus < 0) {
+            sendstatus = sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &servaddr_udp, sizeof(servaddr_udp));
+            if ( sendstatus < 0) {
                 perror("Send to, failed.");
                 exit(EXIT_FAILURE);
             }
@@ -212,7 +205,7 @@ int main(int argc, char *argv[]) {
                 buffer_received[recvlen] = '\0';
             }
             
-            
+            printf("Server responded: %s", buffer_received);
             /*Check status of file from server.*/
             char *status_token = (char *) malloc(sizeof(status_token) * MAX_LINE);
             strcpy(status_token, buffer_received);
@@ -225,6 +218,7 @@ int main(int argc, char *argv[]) {
             /*If file does exist.*/
             if (strcmp(status_token, "OK") == 0) {
                 
+                /* Get the size of the file to be transferred. */
                 char *fileSize;
                 fileSize = (char *) malloc(sizeof(char*) * MAX_LINE);
                 
@@ -237,33 +231,60 @@ int main(int argc, char *argv[]) {
                     position++;
                     status_token = strtok(NULL, "\n");
                 }
-                if (query_count == 0) {
+                
+                /* Remaining TCP connection req. */
+                /* bind, listen, accept. */
+                if (bind(list_s, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp)) < 0) {
+                    perror("Error binding listening socket:");
+                }
+                
+                if (listen(list_s, LISTENQ) < 0) {
+                    perror("Error listening to socket");
+                }
+                
+                while (1) {
+                    if ((socket_tcp = accept(list_s, NULL, NULL)) < 0) {
+                        perror("Error connecting TCP server:");
+                    }
+                    
+                    /* Get file from the server. */
+                    void *large_buffer;
+                    large_buffer = (void *) malloc(sizeof(large_buffer) * MAX_LINE);
+                    read(socket_tcp, large_buffer, MAX_LINE);
+                    
+                    /* write the data to the file. */
+                    fp = fopen(file_name, "wb");
+                    
+                    memset(&endptr, 0, sizeof(endptr));
+                    int file_size = strtol(fileSize, &endptr, 0);
+                    
+                    fwrite(large_buffer, 1, file_size, fp);
+                    
+                    /* close the file and free the memory */
+                    fclose(fp);
+                    free(large_buffer);
+                    free(status_token);
+                    free(fileSize);
+                    
+                    if (close(socket_tcp) < 0) {
+                        perror("Error closing tcp connection");
+                    }
+                    
+                    break;
+                }
+                
+                if (close(list_s) < 0) {
+                    perror("Error closing listening socket");
+                }
+                
+                /*if (query_count == 0) {
                     /*  connect() to the remote echo server  */
-                    if ( connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp) ) < 0 ) {
+                    /*if ( connect(socket_tcp, (struct sockaddr *) &servaddr_tcp, sizeof(servaddr_tcp) ) < 0 ) {
                         perror("Connection failed");
                         exit(EXIT_FAILURE);
                     }
                 }
-                query_count++;
-                /*Experimental*/
-                void *large_buffer;
-                large_buffer = (void *) malloc(sizeof(large_buffer) * MAX_LINE);
-                read(socket_tcp, large_buffer, MAX_LINE);
-                
-                /* write the data to the file. */
-                fp = fopen(file_name, "wb");
-                
-                memset(&endptr, 0, sizeof(endptr));
-                int file_size = strtol(fileSize, &endptr, 0);
-                
-                fwrite(large_buffer, 1, file_size, fp);
-                
-                /* close the file and free the memory */
-                fclose(fp);
-                free(large_buffer);
-                free(status_token);
-                free(fileSize); 
-                
+                query_count++; */
             }
             else {
                 printf("%s not found.\n", temp);
