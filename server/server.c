@@ -35,22 +35,22 @@ Simple TCP/IP echo server.
 
 
 int main(int argc, char *argv[]) {
-    int       socket_tcp;                    /*  connection socket                  */
+    int       socket_tcp;                   /*  connection socket                                   */
     int	      socket_udp;
-    int       list_s;                /*  listening socket          */
-    short int udp_port;                  /*  port number: UDP               */
-    short int tcp_port;              /*  port number: TCP          */
-    struct    sockaddr_in servaddr_udp;  /*  socket address structure  */
+    int       list_s;                       /*  listening socket                                    */
+    short int udp_port;                     /*  port number: UDP                                    */
+    short int tcp_port;                     /*  port number: TCP                                    */
+    struct    sockaddr_in servaddr_udp;     /*  socket address structure                            */
     struct    sockaddr_in servaddr_tcp;
-    struct sockaddr_in remaddr;  /* remote address */
-    socklen_t addrlen = sizeof(remaddr); /* length of remote address */
-    char     *buffer;      /*  character buffer          */
+    struct sockaddr_in remaddr;             /* remote address */
+    socklen_t addrlen = sizeof(remaddr);    /* length of remote address                             */
+    char     *buffer;                       /*  character buffer                                    */
     char     *buffer_send;
-    char     *endptr;                /*  for strtol()              */
-    char     *to_capitalize;         /*  store user string to capitalize */
-    char     *file_name;             /*  for storing file_name to be searched in the server */
-    char     *temp;                   /*  for temporary storage of strings; for formatting */
-    FILE     *fp;                    /*  file pointer */
+    char     *endptr;                       /*  for strtol()                                        */
+    char     *to_capitalize;                /*  store user string to capitalize                     */
+    char     *file_name;                    /*  for storing file_name to be searched in the server  */
+    char     *temp;                         /*  for temporary storage of strings; for formatting    */
+    FILE     *fp;                           /*  file pointer */
 
 
     /*  Get port number from the command line.*/
