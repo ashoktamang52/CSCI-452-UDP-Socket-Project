@@ -132,6 +132,8 @@ int main(int argc, char *argv[]) {
                 buffer_received[recvlen] = '\0';
             }
             
+            printf("Server responded: %s\n", buffer_received);
+            
             /* reset buffer to get only relevant string */
             free(buffer_received);
             free(buffer_send);
@@ -273,7 +275,7 @@ int main(int argc, char *argv[]) {
                 
             }
             else {
-                printf("%s not found.\n", temp);
+                printf("%s not found.\n\n", temp);
             }
             
             /*Free memory*/
@@ -283,12 +285,7 @@ int main(int argc, char *argv[]) {
             free(temp);
         }
         else if (strncmp(buffer, "q", 1) == 0 && strlen(buffer) == 2) {
-            fprintf(stderr, "Now should exit.\n");
-            if (close(socket_tcp) < 0 ) {
-                fprintf(stderr, "ECHOSERV: Error calling close()\n");
-                exit(EXIT_FAILURE);
-            }
-            
+            fprintf(stderr, "Now exiting...\n");
             return EXIT_SUCCESS;
         }
         else 
