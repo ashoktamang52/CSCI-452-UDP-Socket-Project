@@ -132,9 +132,6 @@ int main(int argc, char *argv[]) {
                 buffer_received[recvlen] = '\0';
             }
             
-            printf("Server responded: %s\n", buffer_received);
-            
-            
             /* reset buffer to get only relevant string */
             free(buffer_received);
             free(buffer_send);
@@ -176,7 +173,6 @@ int main(int argc, char *argv[]) {
                 buffer_received[recvlen] = '\0';
             }
             
-            printf("Server responded: %s", buffer_received);
             /*Check status of file from server.*/
             char *status_token = (char *) malloc(sizeof(status_token) * MAX_LINE);
             strcpy(status_token, buffer_received);
@@ -188,7 +184,6 @@ int main(int argc, char *argv[]) {
             
             /*If file does exist.*/
             if (strcmp(status_token, "OK") == 0) {
-                printf("File exists");
                 /* Get the size of the file to be transferred. */
                 char *fileSize;
                 fileSize = (char *) malloc(sizeof(char*) * MAX_LINE);
@@ -252,17 +247,11 @@ int main(int argc, char *argv[]) {
                     /* write the data to the file. */
                     fp = fopen(file_name, "wb");
                     
-                    
-                    
-                    printf("file_size: %d", file_size);
-                    
                     int writelen;
                     if ((writelen = fwrite(large_buffer, 1, file_size, fp)) < 0) {
                         perror("Error writing");
                         exit(0);
                     }
-                    
-                    printf("Written len: %d", writelen);
                     
                     /* close the file and free the memory */
                     fclose(fp);

@@ -1,8 +1,8 @@
 /*
 
-   SERVER.C
-   ==========
-   (c) Ashok Tamang, 2017
+SERVER.C
+==========
+(c) Ashok Tamang, 2017
 Email: ashok.tamang@bison.howard.edu
 Networking and Web Programming, Spring 2017
 
@@ -135,8 +135,6 @@ int main(int argc, char *argv[]) {
         }
 
         if (strncmp(buffer, "FILE", 4) == 0) {
-            
-            printf("Searching file...\n");
 
             /*Allocate memory*/
             file_name = (char *) malloc (sizeof(char*) * recvlen);
@@ -194,7 +192,6 @@ int main(int argc, char *argv[]) {
                 strcat(buffer_send, temp);
                 strcat(buffer_send, "\n");
 
-                printf("to send: %s", buffer_send);
                 /*Send Status message to client.*/
                 if (sendto(socket_udp, buffer_send, strlen(buffer_send), 0, (struct sockaddr *) &remaddr, addrlen) < 0) {
                     perror("Failed to send status.");
@@ -251,7 +248,6 @@ int main(int argc, char *argv[]) {
                         perror("Error writing to Client");
                         exit(0);
                     }
-                    printf("send length: %d", sendlen);
                     offset += sendlen;
                 }
 
